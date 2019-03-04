@@ -5,7 +5,7 @@ library(crossrun)
 # with probability >=  target for shift 0. only boxes with positive corner
 # probability considered. subsequent deletion within the border if possible is
 # placed in separate function taken c and l for this box as input:
-bestbox <- function(pt0    = cr100$pt,
+bestbox <- function(pt0    = cr100,
                     pts    = crs100.0.8,
                     target = 0.925,
                     n1     = 100,
@@ -39,7 +39,7 @@ bestbox <- function(pt0    = cr100$pt,
 # cutting if the corner cannot be removed. If the corner may be removed, it is
 # attempted to remove parts of the border, starting from the corner, in the
 # direction with highest point probability for the target shift:
-cutbox <- function(pt0    = cr100$pt,
+cutbox <- function(pt0    = cr100,
                    pts    = crs100.0.8,
                    target = 0.925,
                    n1     = 100,
@@ -77,45 +77,45 @@ cutbox <- function(pt0    = cr100$pt,
            pt0n.directionl == 0)) {
         finished <- TRUE
       } else if (cutboxpt0 - pt0n.directionc < targt | pt0n.directionc == 0) {
-          lstrip    <- pt0n[c1 + 1, lbord:1]
-          nlstrip   <- length(lstrip)
-          maxlstrip <- max((1:nlstrip)[lstrip > 0])
-          lstrip    <- lstrip[(1:nlstrip) <= maxlstrip]
-          lstripcum <- cumsum(lstrip)
-          if (cutboxpt0 - max(lstripcum) >= targt){
-            lbord <- 0
-          } else {
-            # 0 cannot occurr
-            lbord <- lbord + 1 - min((1:nlstrip)[cutboxpt0 - lstripcum < targt])
-          }
-          finished <- TRUE
-        } else if (cutboxpt0 - pt0n.directionl < targt | pt0n.directionl == 0) {
-          cstrip    <- pt0n[(cbord + 1):n1, l1]
-          ncstrip   <- length(cstrip)
-          maxcstrip <- max((1:ncstrip)[cstrip > 0])
-          cstrip    <- cstrip[(1:ncstrip) <= maxcstrip]
-          cstripcum <- cumsum(cstrip)
-          if (cutboxpt0 - max(cstripcum) >= targt) {
-            cbord <- n1
-          } else {
-            # n1 cannot occurr
-            cbord <- cbord + min((1:ncstrip)[cutboxpt0 - cstripcum < targt]) - 1
-            }
-          finished <- TRUE
-        } else if (ptsn.directionc >= ptsn.directionl) {
-          cbord     <- cbord + 1
-          cutboxpt0 <- cutboxpt0 - pt0n.directionc
-        } else if (ptsn.directionc < ptsn.directionl) {
-          lbord     <- lbord - 1
-          cutboxpt0 <- cutboxpt0 - pt0n.directionl
+        lstrip    <- pt0n[c1 + 1, lbord:1]
+        nlstrip   <- length(lstrip)
+        maxlstrip <- max((1:nlstrip)[lstrip > 0])
+        lstrip    <- lstrip[(1:nlstrip) <= maxlstrip]
+        lstripcum <- cumsum(lstrip)
+        if (cutboxpt0 - max(lstripcum) >= targt){
+          lbord <- 0
+        } else {
+          # 0 cannot occurr
+          lbord <- lbord + 1 - min((1:nlstrip)[cutboxpt0 - lstripcum < targt])
         }
+        finished <- TRUE
+      } else if (cutboxpt0 - pt0n.directionl < targt | pt0n.directionl == 0) {
+        cstrip    <- pt0n[(cbord + 1):n1, l1]
+        ncstrip   <- length(cstrip)
+        maxcstrip <- max((1:ncstrip)[cstrip > 0])
+        cstrip    <- cstrip[(1:ncstrip) <= maxcstrip]
+        cstripcum <- cumsum(cstrip)
+        if (cutboxpt0 - max(cstripcum) >= targt) {
+          cbord <- n1
+        } else {
+          # n1 cannot occurr
+          cbord <- cbord + min((1:ncstrip)[cutboxpt0 - cstripcum < targt]) - 1
+        }
+        finished <- TRUE
+      } else if (ptsn.directionc >= ptsn.directionl) {
+        cbord     <- cbord + 1
+        cutboxpt0 <- cutboxpt0 - pt0n.directionc
+      } else if (ptsn.directionc < ptsn.directionl) {
+        lbord     <- lbord - 1
+        cutboxpt0 <- cutboxpt0 - pt0n.directionl
+      }
     } # end while loop
   } # end if corner may be removed
   return(c(cbord, lbord))
 } # end function cutbox
 
 # compute simultaneous distributions for n=1, ..., 100 in the symmetric case:
-cr100 <- crossrunsymm(100)
+cr100 <- crossrunsymm(100, printn = TRUE)$pt
 
 # shift 0.2 to 3:
 crs100.0.2 <- crossrunshift(shift = 0.2, printn = TRUE)$pt
@@ -297,7 +297,7 @@ bounds$pc_3.0 <- NA
 
 for (nn in 10:100) {
   print(nn)
-
+  
   cb1    <- bounds$cb[bounds$n == nn]
   lb1    <- bounds$lb[bounds$n == nn]
   cbord1 <- bounds$cbord[bounds$n == nn]
