@@ -5,8 +5,8 @@ library(crossrun)
 # with probability >=  target for shift 0. only boxes with positive corner
 # probability considered. subsequent deletion within the border if possible is
 # placed in separate function taken c and l for this box as input:
-bestbox <- function(pt0    = cr100,
-                    pts    = crs100.0.8,
+bestbox <- function(pt0    = crs100_0.0,
+                    pts    = crs100_0.8,
                     target = 0.925,
                     n1     = 100,
                     mult   = 2,
@@ -39,8 +39,8 @@ bestbox <- function(pt0    = cr100,
 # cutting if the corner cannot be removed. If the corner may be removed, it is
 # attempted to remove parts of the border, starting from the corner, in the
 # direction with highest point probability for the target shift:
-cutbox <- function(pt0    = cr100,
-                   pts    = crs100.0.8,
+cutbox <- function(pt0    = crs100_0.0,
+                   pts    = crs100_0.8,
                    target = 0.925,
                    n1     = 100,
                    c1     = 41,
@@ -115,24 +115,24 @@ cutbox <- function(pt0    = cr100,
 } # end function cutbox
 
 # compute simultaneous distributions for n=1, ..., 100 in the symmetric case:
-cr100 <- crossrunsymm(100, printn = TRUE)$pt
+crs100_0.0 <- crossrunsymm(100, printn = TRUE)$pt
 
 # shift 0.2 to 3:
-crs100.0.2 <- crossrunshift(shift = 0.2, printn = TRUE)$pt
-crs100.0.4 <- crossrunshift(shift = 0.4, printn = TRUE)$pt
-crs100.0.6 <- crossrunshift(shift = 0.6, printn = TRUE)$pt
-crs100.0.8 <- crossrunshift(shift = 0.8, printn = TRUE)$pt
-crs100.1.0 <- crossrunshift(shift = 1.0, printn = TRUE)$pt
-crs100.1.2 <- crossrunshift(shift = 1.2, printn = TRUE)$pt
-crs100.1.4 <- crossrunshift(shift = 1.4, printn = TRUE)$pt
-crs100.1.6 <- crossrunshift(shift = 1.6, printn = TRUE)$pt
-crs100.1.8 <- crossrunshift(shift = 1.8, printn = TRUE)$pt
-crs100.2.0 <- crossrunshift(shift = 2.0, printn = TRUE)$pt
-crs100.2.2 <- crossrunshift(shift = 2.2, printn = TRUE)$pt
-crs100.2.4 <- crossrunshift(shift = 2.4, printn = TRUE)$pt
-crs100.2.6 <- crossrunshift(shift = 2.6, printn = TRUE)$pt
-crs100.2.8 <- crossrunshift(shift = 2.8, printn = TRUE)$pt
-crs100.3.0 <- crossrunshift(shift = 3.0, printn = TRUE)$pt
+crs100_0.2 <- crossrunshift(shift = 0.2, printn = TRUE)$pt
+crs100_0.4 <- crossrunshift(shift = 0.4, printn = TRUE)$pt
+crs100_0.6 <- crossrunshift(shift = 0.6, printn = TRUE)$pt
+crs100_0.8 <- crossrunshift(shift = 0.8, printn = TRUE)$pt
+crs100_1.0 <- crossrunshift(shift = 1.0, printn = TRUE)$pt
+crs100_1.2 <- crossrunshift(shift = 1.2, printn = TRUE)$pt
+crs100_1.4 <- crossrunshift(shift = 1.4, printn = TRUE)$pt
+crs100_1.6 <- crossrunshift(shift = 1.6, printn = TRUE)$pt
+crs100_1.8 <- crossrunshift(shift = 1.8, printn = TRUE)$pt
+crs100_2.0 <- crossrunshift(shift = 2.0, printn = TRUE)$pt
+crs100_2.2 <- crossrunshift(shift = 2.2, printn = TRUE)$pt
+crs100_2.4 <- crossrunshift(shift = 2.4, printn = TRUE)$pt
+crs100_2.6 <- crossrunshift(shift = 2.6, printn = TRUE)$pt
+crs100_2.8 <- crossrunshift(shift = 2.8, printn = TRUE)$pt
+crs100_3.0 <- crossrunshift(shift = 3.0, printn = TRUE)$pt
 
 # Table 1 in "Run charts revisited", PLOS ONE November 25, 2014:
 bounds <- data.frame(
@@ -140,7 +140,6 @@ bounds <- data.frame(
   ca = qbinom(0.05, 10:100 - 1, 0.5),
   la = round(log2(10:100) + 3))
 row.names(bounds) <- bounds$n
-# bounds
 
 # find alternative ("best") boxes:
 bounds$cb <- NA
@@ -148,11 +147,8 @@ bounds$lb <- NA
 
 for (nn in 10:100) {
   print(nn)
-  
   bounds[bounds$n == nn, c("cb", "lb")] <- bestbox(n1 = nn)
 }
-
-# bounds[, c("n","ca","cb","la","lb")]
 
 # find cutted  boxes:
 bounds$cbord <- NA
@@ -160,16 +156,13 @@ bounds$lbord <- NA
 
 for (nn in 10:100) {
   print(nn)
-  
   bounds[bounds$n == nn, c("cbord", "lbord")] <-
     cutbox(n1 = nn,
            c1 = bounds$cb[bounds$n == nn],
            l1 = bounds$lb[bounds$n == nn])
 }
 
-# bounds
-
-# find no signal probabilities for the shifts, original and besbox rules:
+# find no signal probabilities for the shifts, original and bestbox rules:
 bounds$pa_0.0 <- NA
 bounds$pa_0.2 <- NA
 bounds$pa_0.4 <- NA
@@ -205,77 +198,75 @@ bounds$pb_3.0 <- NA
 
 for (nn in 10:100) {
   print(nn)
-  
   ca1 <- bounds$ca[bounds$n == nn]
   la1 <- bounds$la[bounds$n == nn]
   cb1 <- bounds$cb[bounds$n == nn]
   lb1 <- bounds$lb[bounds$n == nn]
   bounds$pa_0.0[bounds$n == nn] <-
-    as.numeric(sum(cr100$pt[[nn]][(ca1 + 1):nn, 1:la1]) / sum(cr100$pt[[nn]]))
+    as.numeric(sum(crs100_0.0[[nn]][(ca1 + 1):nn, 1:la1]) / sum(crs100_0.0[[nn]]))
   bounds$pa_0.2[bounds$n == nn] <-
-    as.numeric(sum(crs100.0.2[[nn]][(ca1 + 1):nn, 1:la1]) / sum(crs100.0.2[[nn]]))
+    as.numeric(sum(crs100_0.2[[nn]][(ca1 + 1):nn, 1:la1]) / sum(crs100_0.2[[nn]]))
   bounds$pa_0.4[bounds$n == nn] <-
-    as.numeric(sum(crs100.0.4[[nn]][(ca1 + 1):nn, 1:la1]) / sum(crs100.0.4[[nn]]))
+    as.numeric(sum(crs100_0.4[[nn]][(ca1 + 1):nn, 1:la1]) / sum(crs100_0.4[[nn]]))
   bounds$pa_0.6[bounds$n == nn] <-
-    as.numeric(sum(crs100.0.6[[nn]][(ca1 + 1):nn, 1:la1]) / sum(crs100.0.6[[nn]]))
+    as.numeric(sum(crs100_0.6[[nn]][(ca1 + 1):nn, 1:la1]) / sum(crs100_0.6[[nn]]))
   bounds$pa_0.8[bounds$n == nn] <-
-    as.numeric(sum(crs100.0.8[[nn]][(ca1 + 1):nn, 1:la1]) / sum(crs100.0.8[[nn]]))
+    as.numeric(sum(crs100_0.8[[nn]][(ca1 + 1):nn, 1:la1]) / sum(crs100_0.8[[nn]]))
   bounds$pa_1.0[bounds$n == nn] <-
-    as.numeric(sum(crs100.1.0[[nn]][(ca1 + 1):nn, 1:la1]) / sum(crs100.1.0[[nn]]))
+    as.numeric(sum(crs100_1.0[[nn]][(ca1 + 1):nn, 1:la1]) / sum(crs100_1.0[[nn]]))
   bounds$pa_1.2[bounds$n == nn] <-
-    as.numeric(sum(crs100.1.2[[nn]][(ca1 + 1):nn, 1:la1]) / sum(crs100.1.2[[nn]]))
+    as.numeric(sum(crs100_1.2[[nn]][(ca1 + 1):nn, 1:la1]) / sum(crs100_1.2[[nn]]))
   bounds$pa_1.4[bounds$n == nn] <-
-    as.numeric(sum(crs100.1.4[[nn]][(ca1 + 1):nn, 1:la1]) / sum(crs100.1.4[[nn]]))
+    as.numeric(sum(crs100_1.4[[nn]][(ca1 + 1):nn, 1:la1]) / sum(crs100_1.4[[nn]]))
   bounds$pa_1.6[bounds$n == nn] <-
-    as.numeric(sum(crs100.1.6[[nn]][(ca1 + 1):nn, 1:la1]) / sum(crs100.1.6[[nn]]))
+    as.numeric(sum(crs100_1.6[[nn]][(ca1 + 1):nn, 1:la1]) / sum(crs100_1.6[[nn]]))
   bounds$pa_1.8[bounds$n == nn] <-
-    as.numeric(sum(crs100.1.8[[nn]][(ca1 + 1):nn, 1:la1]) / sum(crs100.1.8[[nn]]))
+    as.numeric(sum(crs100_1.8[[nn]][(ca1 + 1):nn, 1:la1]) / sum(crs100_1.8[[nn]]))
   bounds$pa_2.0[bounds$n == nn] <-
-    as.numeric(sum(crs100.2.0[[nn]][(ca1 + 1):nn, 1:la1]) / sum(crs100.2.0[[nn]]))
+    as.numeric(sum(crs100_2.0[[nn]][(ca1 + 1):nn, 1:la1]) / sum(crs100_2.0[[nn]]))
   bounds$pa_2.2[bounds$n == nn] <-
-    as.numeric(sum(crs100.2.2[[nn]][(ca1 + 1):nn, 1:la1]) / sum(crs100.2.2[[nn]]))
+    as.numeric(sum(crs100_2.2[[nn]][(ca1 + 1):nn, 1:la1]) / sum(crs100_2.2[[nn]]))
   bounds$pa_2.4[bounds$n == nn] <-
-    as.numeric(sum(crs100.2.4[[nn]][(ca1 + 1):nn, 1:la1]) / sum(crs100.2.4[[nn]]))
+    as.numeric(sum(crs100_2.4[[nn]][(ca1 + 1):nn, 1:la1]) / sum(crs100_2.4[[nn]]))
   bounds$pa_2.6[bounds$n == nn] <-
-    as.numeric(sum(crs100.2.6[[nn]][(ca1 + 1):nn, 1:la1]) / sum(crs100.2.6[[nn]]))
+    as.numeric(sum(crs100_2.6[[nn]][(ca1 + 1):nn, 1:la1]) / sum(crs100_2.6[[nn]]))
   bounds$pa_2.8[bounds$n == nn] <-
-    as.numeric(sum(crs100.2.8[[nn]][(ca1 + 1):nn, 1:la1]) / sum(crs100.2.8[[nn]]))
+    as.numeric(sum(crs100_2.8[[nn]][(ca1 + 1):nn, 1:la1]) / sum(crs100_2.8[[nn]]))
   bounds$pa_3.0[bounds$n == nn] <-
-    as.numeric(sum(crs100.3.0[[nn]][(ca1 + 1):nn, 1:la1]) / sum(crs100.3.0[[nn]]))
+    as.numeric(sum(crs100_3.0[[nn]][(ca1 + 1):nn, 1:la1]) / sum(crs100_3.0[[nn]]))
   bounds$pb_0.0[bounds$n == nn] <-
-    as.numeric(sum(cr100$pt[[nn]][(cb1 + 1):nn, 1:lb1]) / sum(cr100$pt[[nn]]))
+    as.numeric(sum(crs100_0.0$pt[[nn]][(cb1 + 1):nn, 1:lb1]) / sum(crs100_0.0$pt[[nn]]))
   bounds$pb_0.2[bounds$n == nn] <-
-    as.numeric(sum(crs100.0.2[[nn]][(cb1 + 1):nn, 1:lb1]) / sum(crs100.0.2[[nn]]))
+    as.numeric(sum(crs100_0.2[[nn]][(cb1 + 1):nn, 1:lb1]) / sum(crs100_0.2[[nn]]))
   bounds$pb_0.4[bounds$n == nn] <-
-    as.numeric(sum(crs100.0.4[[nn]][(cb1 + 1):nn, 1:lb1]) / sum(crs100.0.4[[nn]]))
+    as.numeric(sum(crs100_0.4[[nn]][(cb1 + 1):nn, 1:lb1]) / sum(crs100_0.4[[nn]]))
   bounds$pb_0.6[bounds$n == nn] <-
-    as.numeric(sum(crs100.0.6[[nn]][(cb1 + 1):nn, 1:lb1]) / sum(crs100.0.6[[nn]]))
+    as.numeric(sum(crs100_0.6[[nn]][(cb1 + 1):nn, 1:lb1]) / sum(crs100_0.6[[nn]]))
   bounds$pb_0.8[bounds$n == nn] <-
-    as.numeric(sum(crs100.0.8[[nn]][(cb1 + 1):nn, 1:lb1]) / sum(crs100.0.8[[nn]]))
+    as.numeric(sum(crs100_0.8[[nn]][(cb1 + 1):nn, 1:lb1]) / sum(crs100_0.8[[nn]]))
   bounds$pb_1.0[bounds$n == nn] <-
-    as.numeric(sum(crs100.1.0[[nn]][(cb1 + 1):nn, 1:lb1]) / sum(crs100.1.0[[nn]]))
+    as.numeric(sum(crs100_1.0[[nn]][(cb1 + 1):nn, 1:lb1]) / sum(crs100_1.0[[nn]]))
   bounds$pb_1.2[bounds$n == nn] <-
-    as.numeric(sum(crs100.1.2[[nn]][(cb1 + 1):nn, 1:lb1]) / sum(crs100.1.2[[nn]]))
+    as.numeric(sum(crs100_1.2[[nn]][(cb1 + 1):nn, 1:lb1]) / sum(crs100_1.2[[nn]]))
   bounds$pb_1.4[bounds$n == nn] <-
-    as.numeric(sum(crs100.1.4[[nn]][(cb1 + 1):nn, 1:lb1]) / sum(crs100.1.4[[nn]]))
+    as.numeric(sum(crs100_1.4[[nn]][(cb1 + 1):nn, 1:lb1]) / sum(crs100_1.4[[nn]]))
   bounds$pb_1.6[bounds$n == nn] <-
-    as.numeric(sum(crs100.1.6[[nn]][(cb1 + 1):nn, 1:lb1]) / sum(crs100.1.6[[nn]]))
+    as.numeric(sum(crs100_1.6[[nn]][(cb1 + 1):nn, 1:lb1]) / sum(crs100_1.6[[nn]]))
   bounds$pb_1.8[bounds$n == nn] <-
-    as.numeric(sum(crs100.1.8[[nn]][(cb1 + 1):nn, 1:lb1]) / sum(crs100.1.8[[nn]]))
+    as.numeric(sum(crs100_1.8[[nn]][(cb1 + 1):nn, 1:lb1]) / sum(crs100_1.8[[nn]]))
   bounds$pb_2.0[bounds$n == nn] <-
-    as.numeric(sum(crs100.2.0[[nn]][(cb1 + 1):nn, 1:lb1]) / sum(crs100.2.0[[nn]]))
+    as.numeric(sum(crs100_2.0[[nn]][(cb1 + 1):nn, 1:lb1]) / sum(crs100_2.0[[nn]]))
   bounds$pb_2.2[bounds$n == nn] <-
-    as.numeric(sum(crs100.2.2[[nn]][(cb1 + 1):nn, 1:lb1]) / sum(crs100.2.2[[nn]]))
+    as.numeric(sum(crs100_2.2[[nn]][(cb1 + 1):nn, 1:lb1]) / sum(crs100_2.2[[nn]]))
   bounds$pb_2.4[bounds$n == nn] <-
-    as.numeric(sum(crs100.2.4[[nn]][(cb1 + 1):nn, 1:lb1]) / sum(crs100.2.4[[nn]]))
+    as.numeric(sum(crs100_2.4[[nn]][(cb1 + 1):nn, 1:lb1]) / sum(crs100_2.4[[nn]]))
   bounds$pb_2.6[bounds$n == nn] <-
-    as.numeric(sum(crs100.2.6[[nn]][(cb1 + 1):nn, 1:lb1]) / sum(crs100.2.6[[nn]]))
+    as.numeric(sum(crs100_2.6[[nn]][(cb1 + 1):nn, 1:lb1]) / sum(crs100_2.6[[nn]]))
   bounds$pb_2.8[bounds$n == nn] <-
-    as.numeric(sum(crs100.2.8[[nn]][(cb1 + 1):nn, 1:lb1]) / sum(crs100.2.8[[nn]]))
+    as.numeric(sum(crs100_2.8[[nn]][(cb1 + 1):nn, 1:lb1]) / sum(crs100_2.8[[nn]]))
   bounds$pb_3.0[bounds$n == nn] <-
-    as.numeric(sum(crs100.3.0[[nn]][(cb1 + 1):nn, 1:lb1]) / sum(crs100.3.0[[nn]]))
+    as.numeric(sum(crs100_3.0[[nn]][(cb1 + 1):nn, 1:lb1]) / sum(crs100_3.0[[nn]]))
 }
-# summary(bounds)
 
 # find cutbox probabilities for the shifts:
 bounds$pc_0.0 <- NA
@@ -297,7 +288,6 @@ bounds$pc_3.0 <- NA
 
 for (nn in 10:100) {
   print(nn)
-  
   cb1    <- bounds$cb[bounds$n == nn]
   lb1    <- bounds$lb[bounds$n == nn]
   cbord1 <- bounds$cbord[bounds$n == nn]
@@ -322,85 +312,85 @@ for (nn in 10:100) {
     bounds$pc_3.0[bounds$n == nn] <- bounds$pb_3.0[bounds$n == nn]
   } else {
     bounds$pc_0.0[bounds$n == nn] <- 
-      as.numeric((sum(cr100$pt[[nn]][(cb1 + 2):nn, 1:(lb1 - 1)]) +
-                    sum(cr100$pt[[nn]][(cbord1 + 1):nn, lb1]) +
-                    sum(cr100$pt[[nn]][cb1 + 1, 1:lbord1]))/
-                   sum(cr100$pt[[nn]]))
+      as.numeric((sum(crs100_0.0$pt[[nn]][(cb1 + 2):nn, 1:(lb1 - 1)]) +
+                    sum(crs100_0.0$pt[[nn]][(cbord1 + 1):nn, lb1]) +
+                    sum(crs100_0.0$pt[[nn]][cb1 + 1, 1:lbord1]))/
+                   sum(crs100_0.0$pt[[nn]]))
     bounds$pc_0.2[bounds$n == nn] <- 
-      as.numeric((sum(crs100.0.2[[nn]][(cb1 + 2):nn, 1:(lb1 - 1)]) +
-                    sum(crs100.0.2[[nn]][(cbord1 + 1):nn, lb1]) +
-                    sum(crs100.0.2[[nn]][cb1 + 1, 1:lbord1]))/
-                   sum(crs100.0.2[[nn]]))
+      as.numeric((sum(crs100_0.2[[nn]][(cb1 + 2):nn, 1:(lb1 - 1)]) +
+                    sum(crs100_0.2[[nn]][(cbord1 + 1):nn, lb1]) +
+                    sum(crs100_0.2[[nn]][cb1 + 1, 1:lbord1]))/
+                   sum(crs100_0.2[[nn]]))
     bounds$pc_0.4[bounds$n == nn] <- 
-      as.numeric((sum(crs100.0.4[[nn]][(cb1 + 2):nn, 1:(lb1 - 1)]) +
-                    sum(crs100.0.4[[nn]][(cbord1 + 1):nn, lb1]) +
-                    sum(crs100.0.4[[nn]][cb1 + 1, 1:lbord1])) /
-                   sum(crs100.0.4[[nn]]))
+      as.numeric((sum(crs100_0.4[[nn]][(cb1 + 2):nn, 1:(lb1 - 1)]) +
+                    sum(crs100_0.4[[nn]][(cbord1 + 1):nn, lb1]) +
+                    sum(crs100_0.4[[nn]][cb1 + 1, 1:lbord1])) /
+                   sum(crs100_0.4[[nn]]))
     bounds$pc_0.6[bounds$n == nn] <-
-      as.numeric((sum(crs100.0.6[[nn]][(cb1 + 2):nn, 1:(lb1 - 1)]) +
-                    sum(crs100.0.6[[nn]][(cbord1 + 1):nn, lb1]) +
-                    sum(crs100.0.6[[nn]][cb1 + 1, 1:lbord1])) /
-                   sum(crs100.0.6[[nn]]))
+      as.numeric((sum(crs100_0.6[[nn]][(cb1 + 2):nn, 1:(lb1 - 1)]) +
+                    sum(crs100_0.6[[nn]][(cbord1 + 1):nn, lb1]) +
+                    sum(crs100_0.6[[nn]][cb1 + 1, 1:lbord1])) /
+                   sum(crs100_0.6[[nn]]))
     bounds$pc_0.8[bounds$n==nn] <- 
-      as.numeric((sum(crs100.0.8[[nn]][(cb1+2):nn,1:(lb1-1)]) +
-                    sum(crs100.0.8[[nn]][(cbord1+1):nn,lb1]) +
-                    sum(crs100.0.8[[nn]][cb1+1,1:lbord1]))/
-                   sum(crs100.0.8[[nn]]))
+      as.numeric((sum(crs100_0.8[[nn]][(cb1+2):nn,1:(lb1-1)]) +
+                    sum(crs100_0.8[[nn]][(cbord1+1):nn,lb1]) +
+                    sum(crs100_0.8[[nn]][cb1+1,1:lbord1]))/
+                   sum(crs100_0.8[[nn]]))
     bounds$pc_1.0[bounds$n == nn] <-
-      as.numeric((sum(crs100.1.0[[nn]][(cb1 + 2):nn, 1:(lb1 - 1)]) +
-                    sum(crs100.1.0[[nn]][(cbord1 + 1):nn, lb1]) +
-                    sum(crs100.1.0[[nn]][cb1 + 1, 1:lbord1])) /
-                   sum(crs100.1.0[[nn]]))
+      as.numeric((sum(crs100_1.0[[nn]][(cb1 + 2):nn, 1:(lb1 - 1)]) +
+                    sum(crs100_1.0[[nn]][(cbord1 + 1):nn, lb1]) +
+                    sum(crs100_1.0[[nn]][cb1 + 1, 1:lbord1])) /
+                   sum(crs100_1.0[[nn]]))
     bounds$pc_1.2[bounds$n == nn] <-
-      as.numeric((sum(crs100.1.2[[nn]][(cb1 + 2):nn, 1:(lb1 - 1)]) +
-                    sum(crs100.1.2[[nn]][(cbord1 + 1):nn, lb1]) +
-                    sum(crs100.1.2[[nn]][cb1 + 1, 1:lbord1])) /
-                   sum(crs100.1.2[[nn]]))
+      as.numeric((sum(crs100_1.2[[nn]][(cb1 + 2):nn, 1:(lb1 - 1)]) +
+                    sum(crs100_1.2[[nn]][(cbord1 + 1):nn, lb1]) +
+                    sum(crs100_1.2[[nn]][cb1 + 1, 1:lbord1])) /
+                   sum(crs100_1.2[[nn]]))
     bounds$pc_1.4[bounds$n == nn] <-
-      as.numeric((sum(crs100.1.4[[nn]][(cb1 + 2):nn, 1:(lb1 - 1)]) +
-                    sum(crs100.1.4[[nn]][(cbord1 + 1):nn, lb1]) +
-                    sum(crs100.1.4[[nn]][cb1 + 1, 1:lbord1])) /
-                   sum(crs100.1.4[[nn]]))
+      as.numeric((sum(crs100_1.4[[nn]][(cb1 + 2):nn, 1:(lb1 - 1)]) +
+                    sum(crs100_1.4[[nn]][(cbord1 + 1):nn, lb1]) +
+                    sum(crs100_1.4[[nn]][cb1 + 1, 1:lbord1])) /
+                   sum(crs100_1.4[[nn]]))
     bounds$pc_1.6[bounds$n == nn] <-
-      as.numeric((sum(crs100.1.6[[nn]][(cb1 + 2):nn, 1:(lb1 - 1)]) +
-                    sum(crs100.1.6[[nn]][(cbord1 + 1):nn, lb1]) +
-                    sum(crs100.1.6[[nn]][cb1 + 1, 1:lbord1])) /
-                   sum(crs100.1.6[[nn]]))
+      as.numeric((sum(crs100_1.6[[nn]][(cb1 + 2):nn, 1:(lb1 - 1)]) +
+                    sum(crs100_1.6[[nn]][(cbord1 + 1):nn, lb1]) +
+                    sum(crs100_1.6[[nn]][cb1 + 1, 1:lbord1])) /
+                   sum(crs100_1.6[[nn]]))
     bounds$pc_1.8[bounds$n == nn] <-
-      as.numeric((sum(crs100.1.8[[nn]][(cb1 + 2):nn, 1:(lb1 - 1)]) +
-                    sum(crs100.1.8[[nn]][(cbord1 + 1):nn, lb1]) +
-                    sum(crs100.1.8[[nn]][cb1 + 1, 1:lbord1])) /
-                   sum(crs100.1.8[[nn]]))
+      as.numeric((sum(crs100_1.8[[nn]][(cb1 + 2):nn, 1:(lb1 - 1)]) +
+                    sum(crs100_1.8[[nn]][(cbord1 + 1):nn, lb1]) +
+                    sum(crs100_1.8[[nn]][cb1 + 1, 1:lbord1])) /
+                   sum(crs100_1.8[[nn]]))
     bounds$pc_2.0[bounds$n == nn] <-
-      as.numeric((sum(crs100.2.0[[nn]][(cb1 + 2):nn, 1:(lb1 - 1)]) +
-                    sum(crs100.2.0[[nn]][(cbord1 + 1):nn, lb1]) +
-                    sum(crs100.2.0[[nn]][cb1 + 1, 1:lbord1])) /
-                   sum(crs100.2.0[[nn]]))
+      as.numeric((sum(crs100_2.0[[nn]][(cb1 + 2):nn, 1:(lb1 - 1)]) +
+                    sum(crs100_2.0[[nn]][(cbord1 + 1):nn, lb1]) +
+                    sum(crs100_2.0[[nn]][cb1 + 1, 1:lbord1])) /
+                   sum(crs100_2.0[[nn]]))
     bounds$pc_2.2[bounds$n == nn] <-
-      as.numeric((sum(crs100.2.2[[nn]][(cb1 + 2):nn, 1:(lb1 - 1)]) +
-                    sum(crs100.2.2[[nn]][(cbord1 + 1):nn, lb1]) +
-                    sum(crs100.2.2[[nn]][cb1 + 1, 1:lbord1])) /
-                   sum(crs100.2.2[[nn]]))
+      as.numeric((sum(crs100_2.2[[nn]][(cb1 + 2):nn, 1:(lb1 - 1)]) +
+                    sum(crs100_2.2[[nn]][(cbord1 + 1):nn, lb1]) +
+                    sum(crs100_2.2[[nn]][cb1 + 1, 1:lbord1])) /
+                   sum(crs100_2.2[[nn]]))
     bounds$pc_2.4[bounds$n == nn] <-
-      as.numeric((sum(crs100.2.4[[nn]][(cb1 + 2):nn, 1:(lb1 - 1)]) +
-                    sum(crs100.2.4[[nn]][(cbord1 + 1):nn, lb1]) +
-                    sum(crs100.2.4[[nn]][cb1 + 1, 1:lbord1])) /
-                   sum(crs100.2.4[[nn]]))
+      as.numeric((sum(crs100_2.4[[nn]][(cb1 + 2):nn, 1:(lb1 - 1)]) +
+                    sum(crs100_2.4[[nn]][(cbord1 + 1):nn, lb1]) +
+                    sum(crs100_2.4[[nn]][cb1 + 1, 1:lbord1])) /
+                   sum(crs100_2.4[[nn]]))
     bounds$pc_2.6[bounds$n == nn] <-
-      as.numeric((sum(crs100.2.6[[nn]][(cb1 + 2):nn, 1:(lb1 - 1)]) +
-                    sum(crs100.2.6[[nn]][(cbord1 + 1):nn, lb1]) +
-                    sum(crs100.2.6[[nn]][cb1 + 1, 1:lbord1])) /
-                   sum(crs100.2.6[[nn]]))
+      as.numeric((sum(crs100_2.6[[nn]][(cb1 + 2):nn, 1:(lb1 - 1)]) +
+                    sum(crs100_2.6[[nn]][(cbord1 + 1):nn, lb1]) +
+                    sum(crs100_2.6[[nn]][cb1 + 1, 1:lbord1])) /
+                   sum(crs100_2.6[[nn]]))
     bounds$pc_2.8[bounds$n == nn] <-
-      as.numeric((sum(crs100.2.8[[nn]][(cb1 + 2):nn, 1:(lb1 - 1)]) +
-                    sum(crs100.2.8[[nn]][(cbord1 + 1):nn, lb1]) +
-                    sum(crs100.2.8[[nn]][cb1 + 1, 1:lbord1])) /
-                   sum(crs100.2.8[[nn]]))
+      as.numeric((sum(crs100_2.8[[nn]][(cb1 + 2):nn, 1:(lb1 - 1)]) +
+                    sum(crs100_2.8[[nn]][(cbord1 + 1):nn, lb1]) +
+                    sum(crs100_2.8[[nn]][cb1 + 1, 1:lbord1])) /
+                   sum(crs100_2.8[[nn]]))
     bounds$pc_3.0[bounds$n == nn] <-
-      as.numeric((sum(crs100.3.0[[nn]][(cb1 + 2):nn, 1:(lb1 - 1)]) +
-                    sum(crs100.3.0[[nn]][(cbord1 + 1):nn, lb1]) +
-                    sum(crs100.3.0[[nn]][cb1 + 1, 1:lbord1])) /
-                   sum(crs100.3.0[[nn]]))
+      as.numeric((sum(crs100_3.0[[nn]][(cb1 + 2):nn, 1:(lb1 - 1)]) +
+                    sum(crs100_3.0[[nn]][(cbord1 + 1):nn, lb1]) +
+                    sum(crs100_3.0[[nn]][cb1 + 1, 1:lbord1])) /
+                   sum(crs100_3.0[[nn]]))
   }}
 
 # computation of likelihood ratios:
