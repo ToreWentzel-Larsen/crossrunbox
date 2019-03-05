@@ -1,5 +1,4 @@
 library(tidyverse)
-# bounds <- readRDS('bounds.rds')
 load('data/bounds.RData')
 
 # Compare limits from anhoej and best box rules
@@ -42,8 +41,8 @@ ggplot(filter(tall, test == 'p'), aes(n, 1 - val, colour = rule)) +
 ggplot(filter(tall, test == 'lrpos'), aes(n, val, colour = rule)) +
   geom_line() +
   geom_hline(yintercept = 10) +
-  facet_wrap(~ shift) +
-  scale_y_log10() +
+  facet_wrap(~ shift, ncol = 5) +
+  scale_y_log10(breaks = c(2:10)) +
   theme_minimal() +
   labs(title = 'Positive likelihood ratio',
        y = 'LR+',
@@ -53,7 +52,7 @@ ggplot(filter(tall, test == 'lrpos'), aes(n, val, colour = rule)) +
 ggplot(filter(tall, test == 'lrneg'), aes(n, val, colour = rule)) +
   geom_line() +
   geom_hline(yintercept = 0.1) +
-  facet_wrap(~ shift) +
+  facet_wrap(~ shift, ncol = 5) +
   scale_y_log10() +
   theme_minimal() +
   labs(title = 'Negative likelihood ratio',

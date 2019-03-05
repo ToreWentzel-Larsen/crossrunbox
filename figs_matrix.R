@@ -18,7 +18,6 @@ if(refresh) {
   x <- read_rds('data/x.rds')
 }
 
-
 crplot <- function(n = 12, shift = 0, labels = T, prop = F, round = 1) {
   ca <- bounds$ca[bounds$n == n]
   la <- bounds$la[bounds$n == n]
@@ -49,19 +48,19 @@ crplot <- function(n = 12, shift = 0, labels = T, prop = F, round = 1) {
                   xmax = la - 0.55,
                   ymin = ca - 0.45,
                   ymax = max(C) + 0.45),
-              colour = '#5DA5DA',
+              colour = '#F8766D',
               fill = NA) +
     geom_rect(aes(xmin = 0.45,
                   xmax = lb - 0.45,
                   ymin = cb - 0.55,
                   ymax = max(C) + 0.55),
-              colour = '#F15854',
+              colour = '#00BA38',
               fill = NA) +
     geom_rect(aes(xmin = lbord - 0.5,
                   xmax = lb - 0.5,
                   ymin = cb - 0.5,
                   ymax = cbord - 0.5),
-              colour = '#F15854',
+              colour = '#619CFF',
               linetype = 5,
               fill = NA,
               na.rm = T) +
