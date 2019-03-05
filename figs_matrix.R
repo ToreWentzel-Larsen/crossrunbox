@@ -45,21 +45,21 @@ crplot <- function(n = 12, shift = 0, labels = T, prop = F, round = 1) {
   p <- ggplot(d, aes(L, C, 
                      fill = times > 0,
                      alpha = times / max(times))) +
-    geom_rect(aes(xmin = 0.5,
-                  xmax = la - 0.5,
-                  ymin = ca - 0.5,
-                  ymax = max(C) + 0.5),
+    geom_rect(aes(xmin = 0.55,
+                  xmax = la - 0.55,
+                  ymin = ca - 0.45,
+                  ymax = max(C) + 0.45),
               colour = 'steelblue2',
               fill = NA) +
-    geom_rect(aes(xmin = 0.5,
-                  xmax = lb - 0.5,
-                  ymin = cb - 0.5,
-                  ymax = max(C) + 0.5),
+    geom_rect(aes(xmin = 0.45,
+                  xmax = lb - 0.45,
+                  ymin = cb - 0.55,
+                  ymax = max(C) + 0.55),
               colour = 'tomato',
               fill = NA) +
     geom_rect(aes(xmin = lbord - 0.5,
-                  xmax = lbord + 0.5,
-                  ymin = cbord - 1.5,
+                  xmax = lb - 0.5,
+                  ymin = cb - 0.5,
                   ymax = cbord - 0.5),
               colour = 'black',
               linetype = 5,
@@ -97,4 +97,9 @@ crplot <- function(n = 12, shift = 0, labels = T, prop = F, round = 1) {
   plot(p)
 }
 
-crplot(16)
+crplot(10, labels = F)
+crplot(11, labels = F)
+crplot(15, labels = F)
+crplot(16, labels = F)
+crplot(19, labels = F)
+crplot(47, labels = F)
