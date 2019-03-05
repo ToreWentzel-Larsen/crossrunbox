@@ -22,13 +22,13 @@ if(refresh) {
 crplot <- function(n = 12, shift = 0, labels = T, prop = F, round = 1) {
   ca <- bounds$ca[bounds$n == n]
   la <- bounds$la[bounds$n == n]
-  pa <- bounds$pa_0.0[bounds$n == n]
+  pa <- bounds[n, paste0('pa_', shift, '.0')]
   cb <- bounds$cb[bounds$n == n]
   lb <- bounds$lb[bounds$n == n]
-  pb <- bounds$pb_0.0[bounds$n == n]
+  pb <- bounds[n, paste0('pb_', shift, '.0')]
   cbord <- bounds$cbord[bounds$n == n]
   lbord <- bounds$lbord[bounds$n == n]
-  pc <- bounds$pc_0.0[bounds$n == n]
+  pc <- bounds[n, paste0('pc_', shift, '.0')]
   
   m <- x[[paste0('x', shift)]][[paste0('pt', n)]]
   
@@ -49,19 +49,19 @@ crplot <- function(n = 12, shift = 0, labels = T, prop = F, round = 1) {
                   xmax = la - 0.55,
                   ymin = ca - 0.45,
                   ymax = max(C) + 0.45),
-              colour = 'steelblue2',
+              colour = '#5DA5DA',
               fill = NA) +
     geom_rect(aes(xmin = 0.45,
                   xmax = lb - 0.45,
                   ymin = cb - 0.55,
                   ymax = max(C) + 0.55),
-              colour = 'tomato',
+              colour = '#F15854',
               fill = NA) +
     geom_rect(aes(xmin = lbord - 0.5,
                   xmax = lb - 0.5,
                   ymin = cb - 0.5,
                   ymax = cbord - 0.5),
-              colour = 'black',
+              colour = '#F15854',
               linetype = 5,
               fill = NA,
               na.rm = T) +

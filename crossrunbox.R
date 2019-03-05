@@ -1,3 +1,6 @@
+system.time({
+  
+
 library(Rmpfr)
 library(crossrun)
 
@@ -235,7 +238,7 @@ for (nn in 10:100) {
   bounds$pa_3.0[bounds$n == nn] <-
     as.numeric(sum(crs100_3.0[[nn]][(ca1 + 1):nn, 1:la1]) / sum(crs100_3.0[[nn]]))
   bounds$pb_0.0[bounds$n == nn] <-
-    as.numeric(sum(crs100_0.0$pt[[nn]][(cb1 + 1):nn, 1:lb1]) / sum(crs100_0.0$pt[[nn]]))
+    as.numeric(sum(crs100_0.0[[nn]][(cb1 + 1):nn, 1:lb1]) / sum(crs100_0.0[[nn]]))
   bounds$pb_0.2[bounds$n == nn] <-
     as.numeric(sum(crs100_0.2[[nn]][(cb1 + 1):nn, 1:lb1]) / sum(crs100_0.2[[nn]]))
   bounds$pb_0.4[bounds$n == nn] <-
@@ -312,10 +315,10 @@ for (nn in 10:100) {
     bounds$pc_3.0[bounds$n == nn] <- bounds$pb_3.0[bounds$n == nn]
   } else {
     bounds$pc_0.0[bounds$n == nn] <- 
-      as.numeric((sum(crs100_0.0$pt[[nn]][(cb1 + 2):nn, 1:(lb1 - 1)]) +
-                    sum(crs100_0.0$pt[[nn]][(cbord1 + 1):nn, lb1]) +
-                    sum(crs100_0.0$pt[[nn]][cb1 + 1, 1:lbord1]))/
-                   sum(crs100_0.0$pt[[nn]]))
+      as.numeric((sum(crs100_0.0[[nn]][(cb1 + 2):nn, 1:(lb1 - 1)]) +
+                    sum(crs100_0.0[[nn]][(cbord1 + 1):nn, lb1]) +
+                    sum(crs100_0.0[[nn]][cb1 + 1, 1:lbord1]))/
+                   sum(crs100_0.0[[nn]]))
     bounds$pc_0.2[bounds$n == nn] <- 
       as.numeric((sum(crs100_0.2[[nn]][(cb1 + 2):nn, 1:(lb1 - 1)]) +
                     sum(crs100_0.2[[nn]][(cbord1 + 1):nn, lb1]) +
@@ -487,3 +490,5 @@ bounds$lrnegc_3.0 <- bounds$pc_3.0 / bounds$pc_0.0
 
 # save all except large objects:
 # save(list = ls()[substr(ls(), 1, 2) != "cr"], file = "crossrunbox1.Rdata")
+
+})

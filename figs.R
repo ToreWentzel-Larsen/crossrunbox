@@ -1,5 +1,6 @@
 library(tidyverse)
-bounds <- readRDS('bounds.rds')
+# bounds <- readRDS('bounds.rds')
+load('data/bounds.RData')
 
 # Compare limits from anhoej and best box rules
 limits <- bounds %>% 
