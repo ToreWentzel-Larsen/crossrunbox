@@ -1,35 +1,21 @@
 # Setup ----
 library(tidyverse)
 library(crossrun)
-load('data/bounds.RData')
 
-refresh <- F
-
-## Recalculate or get small list object for plotting LC box figures
-if(refresh) {
-  library(Rmpfr)
-  load('data/crs100.RData')
-  x <- list(
-    x0 = map(crs100_0.0, asNumeric),
-    x1 = map(crs100_1.0, asNumeric),
-    x2 = map(crs100_2.0, asNumeric))
-  rm(list = ls(pattern = 'crs100_'))
-  write_rds(x, 'data/x.rds')
-} else {
-  x <- read_rds('data/x.rds')
-}
+load('data/boundspl.Rdata')
+x <- read_rds('data/x.rds')
 
 ## Tall bounds data
-limits <- bounds %>% 
+limits <- boundspl %>% 
   select(n:lb) %>% 
   gather('key', 'val', -n) %>% 
   separate(key, c('test', 'rule'), 1) %>% 
-  mutate(test = fct_recode(test, `number of crossings` = 'c',
-                           `longest run` = 'l'),
+  mutate(test = fct_recode(test, `Lower limit for number of crossings` = 'c',
+                           `Upper limit forlongest run` = 'l'),
          rule = fct_recode(rule, anhoej = 'a',
                            `best box` = 'b'))
 ## Tall parameter value data
-vals <- bounds %>% 
+vals <- boundspl %>% 
   select(-(ca:lbord)) %>%
   gather('key', 'val', -n) %>% 
   separate(key, c('test', 'shift'), '_') %>% 
@@ -187,4 +173,4 @@ crplot(16, labels = F)
 # crplot(24, labels = F)
 # crplot(47, labels = F)
 # crplot(52, labels = F)
-
+# crplot(70, labels = F)
