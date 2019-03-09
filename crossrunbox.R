@@ -34,7 +34,7 @@ bestbox <- function(pt0    = crs100_0.0,
         boxprt <- bpttarg[cc + 1, ll]
       }
     } # end search through (c,l) with positive no (,l)
-  return(c(c1, l1)) # only box som far, reduction later
+  return(c(c1, l1)) # only box so far, reduction later
 } # end function bestbox
 
 # function for cutting a box while keeping probability >= target for shift 0. No
@@ -126,7 +126,7 @@ cutbox <- function(pt0    = crs100_0.0,
   return(c(cbord, lbord))
 } # end function cutbox
 
-# compute simultaneous distributions for n=1, ..., 100 in the symmetric case:
+# compute simultaneous distributions for n = 1, ..., 100 in the symmetric case:
 crs100_0.0 <- crossrunsymm(100, printn = TRUE)$pt
 
 # shift 0.2 to 3:
@@ -185,13 +185,13 @@ mone <- mpfr(-1, prec.use)
 # initialize to impossible (negative) value:
 pat <- mpfr2array(rep(mone, 91 * 16), dim = c(91, 16))
 rownames(pat) <- 10:100
-colnames(pat) <-
-  paste0("pat_", rep(c(0, 1, 2, 3), c(5, 5, 5, 1)), ".",
-         c(rep(c(0, 2, 4, 6, 8), 3), 0))
+colnames(pat) <- paste0("pat_", rep(c(0, 1, 2, 3), c(5, 5, 5, 1)), ".",
+                        c(rep(c(0, 2, 4, 6, 8), 3), 0))
 pbt <- mpfr2array(rep(mone, 91 * 16), dim = c(91, 16))
 rownames(pbt) <- 10:100
-colnames(pbt) <- paste0("pbt_", rep(c(0, 1, 2, 3), c(5, 5, 5, 1)), ".",
-                        c(rep(c(0, 2, 4, 6, 8), 3), 0))
+colnames(pbt) <-
+  paste0("pbt_", rep(c(0, 1, 2, 3), c(5, 5, 5, 1)), ".",
+         c(rep(c(0, 2, 4, 6, 8), 3), 0))
 pct <- mpfr2array(rep(mone, 91 * 16), dim = c(91, 16))
 rownames(pct) <- 10:100
 colnames(pct) <- paste0("pct_", rep(c(0, 1, 2, 3), c(5, 5, 5, 1)), ".",
@@ -225,22 +225,22 @@ for (nn in 10:100) {
   print(nn)
   cb1 <- bounds$cb[bounds$n == nn]
   lb1 <- bounds$lb[bounds$n == nn]
-  pbt[nn - 9, 1] <- sum(crs100_0.0[[nn]][(cb1 + 1):nn, 1:lb1])
-  pbt[nn - 9, 2] <- sum(crs100_0.2[[nn]][(cb1 + 1):nn, 1:lb1])
-  pbt[nn - 9, 3] <- sum(crs100_0.4[[nn]][(cb1 + 1):nn, 1:lb1])
-  pbt[nn - 9, 4] <- sum(crs100_0.6[[nn]][(cb1 + 1):nn, 1:lb1])
-  pbt[nn - 9, 5] <- sum(crs100_0.8[[nn]][(cb1 + 1):nn, 1:lb1])
-  pbt[nn - 9, 6] <- sum(crs100_1.0[[nn]][(cb1 + 1):nn, 1:lb1])
-  pbt[nn - 9, 7] <- sum(crs100_1.2[[nn]][(cb1 + 1):nn, 1:lb1])
-  pbt[nn - 9, 8] <- sum(crs100_1.4[[nn]][(cb1 + 1):nn, 1:lb1])
-  pbt[nn - 9, 9] <- sum(crs100_1.6[[nn]][(cb1 + 1):nn, 1:lb1])
-  pbt[nn - 9, 10] <- sum(crs100_1.8[[nn]][(cb1 + 1):nn, 1:lb1])
-  pbt[nn - 9, 11] <- sum(crs100_2.0[[nn]][(cb1 + 1):nn, 1:lb1])
-  pbt[nn - 9, 12] <- sum(crs100_2.2[[nn]][(cb1 + 1):nn, 1:lb1])
-  pbt[nn - 9, 13] <- sum(crs100_2.4[[nn]][(cb1 + 1):nn, 1:lb1])
-  pbt[nn - 9, 14] <- sum(crs100_2.6[[nn]][(cb1 + 1):nn, 1:lb1])
-  pbt[nn - 9, 15] <- sum(crs100_2.8[[nn]][(cb1 + 1):nn, 1:lb1])
-  pbt[nn - 9, 16] <- sum(crs100_3.0[[nn]][(cb1 + 1):nn, 1:lb1])
+  pbt[nn-9, 1] <- sum(crs100_0.0[[nn]][(cb1 + 1):nn, 1:lb1])
+  pbt[nn-9, 2] <- sum(crs100_0.2[[nn]][(cb1 + 1):nn, 1:lb1])
+  pbt[nn-9, 3] <- sum(crs100_0.4[[nn]][(cb1 + 1):nn, 1:lb1])
+  pbt[nn-9, 4] <- sum(crs100_0.6[[nn]][(cb1 + 1):nn, 1:lb1])
+  pbt[nn-9, 5] <- sum(crs100_0.8[[nn]][(cb1 + 1):nn, 1:lb1])
+  pbt[nn-9, 6] <- sum(crs100_1.0[[nn]][(cb1 + 1):nn, 1:lb1])
+  pbt[nn-9, 7] <- sum(crs100_1.2[[nn]][(cb1 + 1):nn, 1:lb1])
+  pbt[nn-9, 8] <- sum(crs100_1.4[[nn]][(cb1 + 1):nn, 1:lb1])
+  pbt[nn-9, 9] <- sum(crs100_1.6[[nn]][(cb1 + 1):nn, 1:lb1])
+  pbt[nn-9, 10] <- sum(crs100_1.8[[nn]][(cb1 + 1):nn, 1:lb1])
+  pbt[nn-9, 11] <- sum(crs100_2.0[[nn]][(cb1 + 1):nn, 1:lb1])
+  pbt[nn-9, 12] <- sum(crs100_2.2[[nn]][(cb1 + 1):nn, 1:lb1])
+  pbt[nn-9, 13] <- sum(crs100_2.4[[nn]][(cb1 + 1):nn, 1:lb1])
+  pbt[nn-9, 14] <- sum(crs100_2.6[[nn]][(cb1 + 1):nn, 1:lb1])
+  pbt[nn-9, 15] <- sum(crs100_2.8[[nn]][(cb1 + 1):nn, 1:lb1])
+  pbt[nn-9, 16] <- sum(crs100_3.0[[nn]][(cb1 + 1):nn, 1:lb1])
 }
 
 # cut boxes:
@@ -321,175 +321,220 @@ for (nn in 10:100) {
   }
 }
 
-# computation of likelihood ratios:
+# computation of log likelihood ratios:
 # initialization to impossible (negative) value:
-lrposa <- mpfr2array(rep(mone, 91 * 15), dim = c(91, 15))
-rownames(lrposa) <- 10:100
-colnames(lrposa) <-
-  paste0("lrposa_", rep(c(0, 1, 2, 3), c(4, 5, 5, 1)), ".",
+loglrposa <- mpfr2array(rep(mone, 91 * 15), dim = c(91, 15))
+rownames(loglrposa) <- 10:100
+colnames(loglrposa) <-
+  paste0("loglrposa_", rep(c(0, 1, 2, 3), c(4, 5, 5, 1)), ".",
          rep(c(2, 4, 6, 8, 0), 3))
-lrposb <- mpfr2array(rep(mone, 91 * 15), dim = c(91, 15))
-rownames(lrposb) <- 10:100
-colnames(lrposb) <-
-  paste0("lrposb_", rep(c(0, 1, 2, 3), c(4, 5, 5, 1)), ".",
+loglrposb <- mpfr2array(rep(mone, 91 * 15), dim = c(91, 15))
+rownames(loglrposb) <- 10:100
+colnames(loglrposb) <-
+  paste0("loglrposb_", rep(c(0, 1, 2, 3), c(4, 5, 5, 1)), ".",
          rep(c(2, 4, 6, 8, 0), 3))
-lrposc <- mpfr2array(rep(mone, 91 * 15), dim = c(91, 15))
-rownames(lrposc) <- 10:100
-colnames(lrposc) <-
-  paste0("lrposc_", rep(c(0, 1, 2, 3), c(4, 5, 5, 1)), ".",
+loglrposc <- mpfr2array(rep(mone, 91 * 15), dim = c(91, 15))
+rownames(loglrposc) <- 10:100
+colnames(loglrposc) <-
+  paste0("loglrposc_", rep(c(0, 1, 2, 3), c(4, 5, 5, 1)), ".",
          rep(c(2, 4, 6, 8, 0), 3))
-lrnega <- mpfr2array(rep(mone, 91 * 15), dim = c(91, 15))
-rownames(lrnega) <- 10:100
-colnames(lrnega) <-
-  paste0("lrnega_", rep(c(0, 1, 2, 3), c(4, 5, 5, 1)), ".",
+loglrnega <- mpfr2array(rep(mone, 91 * 15), dim = c(91, 15))
+rownames(loglrnega) <- 10:100
+colnames(loglrnega) <-
+  paste0("loglrnega_", rep(c(0, 1, 2, 3), c(4, 5, 5, 1)), ".",
          rep(c(2, 4, 6, 8, 0), 3))
-lrnegb <- mpfr2array(rep(mone, 91 * 15), dim = c(91, 15))
-rownames(lrnegb) <- 10:100
-colnames(lrnegb) <-
-  paste0("lrnegb_", rep(c(0, 1, 2, 3), c(4, 5, 5, 1)), ".",
+loglrnegb <- mpfr2array(rep(mone, 91 * 15), dim = c(91, 15))
+rownames(loglrnegb) <- 10:100
+colnames(loglrnegb) <-
+  paste0("loglrnegb_", rep(c(0, 1, 2, 3), c(4, 5, 5, 1)), ".",
          rep(c(2, 4, 6, 8, 0), 3))
-lrnegc <- mpfr2array(rep(mone, 91 * 15), dim = c(91, 15))
-rownames(lrnegc) <- 10:100
-colnames(lrnegc) <-
-  paste0("lrnegc_", rep(c(0, 1, 2, 3), c(4, 5, 5, 1)), ".",
+loglrnegc <- mpfr2array(rep(mone, 91 * 15), dim = c(91, 15))
+rownames(loglrnegc) <- 10:100
+colnames(loglrnegc) <-
+  paste0("loglrnegc_", rep(c(0, 1, 2, 3), c(4, 5, 5, 1)), ".",
          rep(c(2, 4, 6, 8, 0), 3))
 
 # computation:
-lrposa[, "lrposa_0.2"] <-
-  (two ^ (9:99) - pat[, "pat_0.2"]) / (two ^ (9:99) - pat[, "pat_0.0"])
-lrposa[, "lrposa_0.4"] <-
-  (two ^ (9:99) - pat[, "pat_0.4"]) / (two ^ (9:99) - pat[, "pat_0.0"])
-lrposa[, "lrposa_0.6"] <-
-  (two ^ (9:99) - pat[, "pat_0.6"]) / (two ^ (9:99) - pat[, "pat_0.0"])
-lrposa[, "lrposa_0.8"] <-
-  (two ^ (9:99) - pat[, "pat_0.8"]) / (two ^ (9:99) - pat[, "pat_0.0"])
-lrposa[, "lrposa_1.0"] <-
-  (two ^ (9:99) - pat[, "pat_1.0"]) / (two ^ (9:99) - pat[, "pat_0.0"])
-lrposa[, "lrposa_1.2"] <-
-  (two ^ (9:99) - pat[, "pat_1.2"]) / (two ^ (9:99) - pat[, "pat_0.0"])
-lrposa[, "lrposa_1.4"] <-
-  (two ^ (9:99) - pat[, "pat_1.4"]) / (two ^ (9:99) - pat[, "pat_0.0"])
-lrposa[, "lrposa_1.6"] <-
-  (two ^ (9:99) - pat[, "pat_1.6"]) / (two ^ (9:99) - pat[, "pat_0.0"])
-lrposa[, "lrposa_1.8"] <-
-  (two ^ (9:99) - pat[, "pat_1.8"]) / (two ^ (9:99) - pat[, "pat_0.0"])
-lrposa[, "lrposa_2.0"] <-
-  (two ^ (9:99) - pat[, "pat_2.0"]) / (two ^ (9:99) - pat[, "pat_0.0"])
-lrposa[, "lrposa_2.2"] <-
-  (two ^ (9:99) - pat[, "pat_2.2"]) / (two ^ (9:99) - pat[, "pat_0.0"])
-lrposa[, "lrposa_2.4"] <-
-  (two ^ (9:99) - pat[, "pat_2.4"]) / (two ^ (9:99) - pat[, "pat_0.0"])
-lrposa[, "lrposa_2.6"] <-
-  (two ^ (9:99) - pat[, "pat_2.6"]) / (two ^ (9:99) - pat[, "pat_0.0"])
-lrposa[, "lrposa_2.8"] <-
-  (two ^ (9:99) - pat[, "pat_2.8"]) / (two ^ (9:99) - pat[, "pat_0.0"])
-lrposa[, "lrposa_3.0"] <-
-  (two ^ (9:99) - pat[, "pat_3.0"]) / (two ^ (9:99) - pat[, "pat_0.0"])
-lrposb[, "lrposb_0.2"] <-
-  (two ^ (9:99) - pbt[, "pbt_0.2"]) / (two ^ (9:99) - pbt[, "pbt_0.0"])
-lrposb[, "lrposb_0.4"] <-
-  (two ^ (9:99) - pbt[, "pbt_0.4"]) / (two ^ (9:99) - pbt[, "pbt_0.0"])
-lrposb[, "lrposb_0.6"] <-
-  (two ^ (9:99) - pbt[, "pbt_0.6"]) / (two ^ (9:99) - pbt[, "pbt_0.0"])
-lrposb[, "lrposb_0.8"] <-
-  (two ^ (9:99) - pbt[, "pbt_0.8"]) / (two ^ (9:99) - pbt[, "pbt_0.0"])
-lrposb[, "lrposb_1.0"] <-
-  (two ^ (9:99) - pbt[, "pbt_1.0"]) / (two ^ (9:99) - pbt[, "pbt_0.0"])
-lrposb[, "lrposb_1.2"] <-
-  (two ^ (9:99) - pbt[, "pbt_1.2"]) / (two ^ (9:99) - pbt[, "pbt_0.0"])
-lrposb[, "lrposb_1.4"] <-
-  (two ^ (9:99) - pbt[, "pbt_1.4"]) / (two ^ (9:99) - pbt[, "pbt_0.0"])
-lrposb[, "lrposb_1.6"] <-
-  (two ^ (9:99) - pbt[, "pbt_1.6"]) / (two ^ (9:99) - pbt[, "pbt_0.0"])
-lrposb[, "lrposb_1.8"] <-
-  (two ^ (9:99) - pbt[, "pbt_1.8"]) / (two ^ (9:99) - pbt[, "pbt_0.0"])
-lrposb[, "lrposb_2.0"] <-
-  (two ^ (9:99) - pbt[, "pbt_2.0"]) / (two ^ (9:99) - pbt[, "pbt_0.0"])
-lrposb[, "lrposb_2.2"] <-
-  (two ^ (9:99) - pbt[, "pbt_2.2"]) / (two ^ (9:99) - pbt[, "pbt_0.0"])
-lrposb[, "lrposb_2.4"] <-
-  (two ^ (9:99) - pbt[, "pbt_2.4"]) / (two ^ (9:99) - pbt[, "pbt_0.0"])
-lrposb[, "lrposb_2.6"] <-
-  (two ^ (9:99) - pbt[, "pbt_2.6"]) / (two ^ (9:99) - pbt[, "pbt_0.0"])
-lrposb[, "lrposb_2.8"] <-
-  (two ^ (9:99) - pbt[, "pbt_2.8"]) / (two ^ (9:99) - pbt[, "pbt_0.0"])
-lrposb[, "lrposb_3.0"] <-
-  (two ^ (9:99) - pbt[, "pbt_3.0"]) / (two ^ (9:99) - pbt[, "pbt_0.0"])
-lrposc[, "lrposc_0.2"] <-
-  (two ^ (9:99) - pct[, "pct_0.2"]) / (two ^ (9:99) - pct[, "pct_0.0"])
-lrposc[, "lrposc_0.4"] <-
-  (two ^ (9:99) - pct[, "pct_0.4"]) / (two ^ (9:99) - pct[, "pct_0.0"])
-lrposc[, "lrposc_0.6"] <-
-  (two ^ (9:99) - pct[, "pct_0.6"]) / (two ^ (9:99) - pct[, "pct_0.0"])
-lrposc[, "lrposc_0.8"] <-
-  (two ^ (9:99) - pct[, "pct_0.8"]) / (two ^ (9:99) - pct[, "pct_0.0"])
-lrposc[, "lrposc_1.0"] <-
-  (two ^ (9:99) - pct[, "pct_1.0"]) / (two ^ (9:99) - pct[, "pct_0.0"])
-lrposc[, "lrposc_1.2"] <-
-  (two ^ (9:99) - pct[, "pct_1.2"]) / (two ^ (9:99) - pct[, "pct_0.0"])
-lrposc[, "lrposc_1.4"] <-
-  (two ^ (9:99) - pct[, "pct_1.4"]) / (two ^ (9:99) - pct[, "pct_0.0"])
-lrposc[, "lrposc_1.6"] <-
-  (two ^ (9:99) - pct[, "pct_1.6"]) / (two ^ (9:99) - pct[, "pct_0.0"])
-lrposc[, "lrposc_1.8"] <-
-  (two ^ (9:99) - pct[, "pct_1.8"]) / (two ^ (9:99) - pct[, "pct_0.0"])
-lrposc[, "lrposc_2.0"] <-
-  (two ^ (9:99) - pct[, "pct_2.0"]) / (two ^ (9:99) - pct[, "pct_0.0"])
-lrposc[, "lrposc_2.2"] <-
-  (two ^ (9:99) - pct[, "pct_2.2"]) / (two ^ (9:99) - pct[, "pct_0.0"])
-lrposc[, "lrposc_2.4"] <-
-  (two ^ (9:99) - pct[, "pct_2.4"]) / (two ^ (9:99) - pct[, "pct_0.0"])
-lrposc[, "lrposc_2.6"] <-
-  (two ^ (9:99) - pct[, "pct_2.6"]) / (two ^ (9:99) - pct[, "pct_0.0"])
-lrposc[, "lrposc_2.8"] <-
-  (two ^ (9:99) - pct[, "pct_2.8"]) / (two ^ (9:99) - pct[, "pct_0.0"])
-lrposc[, "lrposc_3.0"] <-
-  (two ^ (9:99) - pct[, "pct_3.0"]) / (two ^ (9:99) - pct[, "pct_0.0"])
-lrnega[, "lrnega_0.2"] <- pat[, "pat_0.2"] / pat[, "pat_0.0"]
-lrnega[, "lrnega_0.4"] <- pat[, "pat_0.4"] / pat[, "pat_0.0"]
-lrnega[, "lrnega_0.6"] <- pat[, "pat_0.6"] / pat[, "pat_0.0"]
-lrnega[, "lrnega_0.8"] <- pat[, "pat_0.8"] / pat[, "pat_0.0"]
-lrnega[, "lrnega_1.0"] <- pat[, "pat_1.0"] / pat[, "pat_0.0"]
-lrnega[, "lrnega_1.2"] <- pat[, "pat_1.2"] / pat[, "pat_0.0"]
-lrnega[, "lrnega_1.4"] <- pat[, "pat_1.4"] / pat[, "pat_0.0"]
-lrnega[, "lrnega_1.6"] <- pat[, "pat_1.6"] / pat[, "pat_0.0"]
-lrnega[, "lrnega_1.8"] <- pat[, "pat_1.8"] / pat[, "pat_0.0"]
-lrnega[, "lrnega_2.0"] <- pat[, "pat_2.0"] / pat[, "pat_0.0"]
-lrnega[, "lrnega_2.2"] <- pat[, "pat_2.2"] / pat[, "pat_0.0"]
-lrnega[, "lrnega_2.4"] <- pat[, "pat_2.4"] / pat[, "pat_0.0"]
-lrnega[, "lrnega_2.6"] <- pat[, "pat_2.6"] / pat[, "pat_0.0"]
-lrnega[, "lrnega_2.8"] <- pat[, "pat_2.8"] / pat[, "pat_0.0"]
-lrnega[, "lrnega_3.0"] <- pat[, "pat_3.0"] / pat[, "pat_0.0"]
-lrnegb[, "lrnegb_0.2"] <- pbt[, "pbt_0.2"] / pbt[, "pbt_0.0"]
-lrnegb[, "lrnegb_0.4"] <- pbt[, "pbt_0.4"] / pbt[, "pbt_0.0"]
-lrnegb[, "lrnegb_0.6"] <- pbt[, "pbt_0.6"] / pbt[, "pbt_0.0"]
-lrnegb[, "lrnegb_0.8"] <- pbt[, "pbt_0.8"] / pbt[, "pbt_0.0"]
-lrnegb[, "lrnegb_1.0"] <- pbt[, "pbt_1.0"] / pbt[, "pbt_0.0"]
-lrnegb[, "lrnegb_1.2"] <- pbt[, "pbt_1.2"] / pbt[, "pbt_0.0"]
-lrnegb[, "lrnegb_1.4"] <- pbt[, "pbt_1.4"] / pbt[, "pbt_0.0"]
-lrnegb[, "lrnegb_1.6"] <- pbt[, "pbt_1.6"] / pbt[, "pbt_0.0"]
-lrnegb[, "lrnegb_1.8"] <- pbt[, "pbt_1.8"] / pbt[, "pbt_0.0"]
-lrnegb[, "lrnegb_2.0"] <- pbt[, "pbt_2.0"] / pbt[, "pbt_0.0"]
-lrnegb[, "lrnegb_2.2"] <- pbt[, "pbt_2.2"] / pbt[, "pbt_0.0"]
-lrnegb[, "lrnegb_2.4"] <- pbt[, "pbt_2.4"] / pbt[, "pbt_0.0"]
-lrnegb[, "lrnegb_2.6"] <- pbt[, "pbt_2.6"] / pbt[, "pbt_0.0"]
-lrnegb[, "lrnegb_2.8"] <- pbt[, "pbt_2.8"] / pbt[, "pbt_0.0"]
-lrnegb[, "lrnegb_3.0"] <- pbt[, "pbt_3.0"] / pbt[, "pbt_0.0"]
-lrnegc[, "lrnegc_0.2"] <- pct[, "pct_0.2"] / pct[, "pct_0.0"]
-lrnegc[, "lrnegc_0.4"] <- pct[, "pct_0.4"] / pct[, "pct_0.0"]
-lrnegc[, "lrnegc_0.6"] <- pct[, "pct_0.6"] / pct[, "pct_0.0"]
-lrnegc[, "lrnegc_0.8"] <- pct[, "pct_0.8"] / pct[, "pct_0.0"]
-lrnegc[, "lrnegc_1.0"] <- pct[, "pct_1.0"] / pct[, "pct_0.0"]
-lrnegc[, "lrnegc_1.2"] <- pct[, "pct_1.2"] / pct[, "pct_0.0"]
-lrnegc[, "lrnegc_1.4"] <- pct[, "pct_1.4"] / pct[, "pct_0.0"]
-lrnegc[, "lrnegc_1.6"] <- pct[, "pct_1.6"] / pct[, "pct_0.0"]
-lrnegc[, "lrnegc_1.8"] <- pct[, "pct_1.8"] / pct[, "pct_0.0"]
-lrnegc[, "lrnegc_2.0"] <- pct[, "pct_2.0"] / pct[, "pct_0.0"]
-lrnegc[, "lrnegc_2.2"] <- pct[, "pct_2.2"] / pct[, "pct_0.0"]
-lrnegc[, "lrnegc_2.4"] <- pct[, "pct_2.4"] / pct[, "pct_0.0"]
-lrnegc[, "lrnegc_2.6"] <- pct[, "pct_2.6"] / pct[, "pct_0.0"]
-lrnegc[, "lrnegc_2.8"] <- pct[, "pct_2.8"] / pct[, "pct_0.0"]
-lrnegc[, "lrnegc_3.0"] <- pct[, "pct_3.0"] / pct[, "pct_0.0"]
+loglrposa[, "loglrposa_0.2"] <-
+  log(two ^ (9:99) - pat[, "pat_0.2"]) - log(two ^ (9:99) - pat[, "pat_0.0"])
+loglrposa[, "loglrposa_0.4"] <-
+  log(two ^ (9:99) - pat[, "pat_0.4"]) - log(two ^ (9:99) - pat[, "pat_0.0"])
+loglrposa[, "loglrposa_0.6"] <-
+  log(two ^ (9:99) - pat[, "pat_0.6"]) - log(two ^ (9:99) - pat[, "pat_0.0"])
+loglrposa[, "loglrposa_0.8"] <-
+  log(two ^ (9:99) - pat[, "pat_0.8"]) - log(two ^ (9:99) - pat[, "pat_0.0"])
+loglrposa[, "loglrposa_1.0"] <-
+  log(two ^ (9:99) - pat[, "pat_1.0"]) - log(two ^ (9:99) - pat[, "pat_0.0"])
+loglrposa[, "loglrposa_1.2"] <-
+  log(two ^ (9:99) - pat[, "pat_1.2"]) - log(two ^ (9:99) - pat[, "pat_0.0"])
+loglrposa[, "loglrposa_1.4"] <-
+  log(two ^ (9:99) - pat[, "pat_1.4"]) - log(two ^ (9:99) - pat[, "pat_0.0"])
+loglrposa[, "loglrposa_1.6"] <-
+  log(two ^ (9:99) - pat[, "pat_1.6"]) - log(two ^ (9:99) - pat[, "pat_0.0"])
+loglrposa[, "loglrposa_1.8"] <-
+  log(two ^ (9:99) - pat[, "pat_1.8"]) - log(two ^ (9:99) - pat[, "pat_0.0"])
+loglrposa[, "loglrposa_2.0"] <-
+  log(two ^ (9:99) - pat[, "pat_2.0"]) - log(two ^ (9:99) - pat[, "pat_0.0"])
+loglrposa[, "loglrposa_2.2"] <-
+  log(two ^ (9:99) - pat[, "pat_2.2"]) - log(two ^ (9:99) - pat[, "pat_0.0"])
+loglrposa[, "loglrposa_2.4"] <-
+  log(two ^ (9:99) - pat[, "pat_2.4"]) - log(two ^ (9:99) - pat[, "pat_0.0"])
+loglrposa[, "loglrposa_2.6"] <-
+  log(two ^ (9:99) - pat[, "pat_2.6"]) - log(two ^ (9:99) - pat[, "pat_0.0"])
+loglrposa[, "loglrposa_2.8"] <-
+  log(two ^ (9:99) - pat[, "pat_2.8"]) - log(two ^ (9:99) - pat[, "pat_0.0"])
+loglrposa[, "loglrposa_3.0"] <-
+  log(two ^ (9:99) - pat[, "pat_3.0"]) - log(two ^ (9:99) - pat[, "pat_0.0"])
+loglrposb[, "loglrposb_0.2"] <-
+  log(two ^ (9:99) - pbt[, "pbt_0.2"]) - log(two ^ (9:99) - pbt[, "pbt_0.0"])
+loglrposb[, "loglrposb_0.4"] <-
+  log(two ^ (9:99) - pbt[, "pbt_0.4"]) - log(two ^ (9:99) - pbt[, "pbt_0.0"])
+loglrposb[, "loglrposb_0.6"] <-
+  log(two ^ (9:99) - pbt[, "pbt_0.6"]) - log(two ^ (9:99) - pbt[, "pbt_0.0"])
+loglrposb[, "loglrposb_0.8"] <-
+  log(two ^ (9:99) - pbt[, "pbt_0.8"]) - log(two ^ (9:99) - pbt[, "pbt_0.0"])
+loglrposb[, "loglrposb_1.0"] <-
+  log(two ^ (9:99) - pbt[, "pbt_1.0"]) - log(two ^ (9:99) - pbt[, "pbt_0.0"])
+loglrposb[, "loglrposb_1.2"] <-
+  log(two ^ (9:99) - pbt[, "pbt_1.2"]) - log(two ^ (9:99) - pbt[, "pbt_0.0"])
+loglrposb[, "loglrposb_1.4"] <-
+  log(two ^ (9:99) - pbt[, "pbt_1.4"]) - log(two ^ (9:99) - pbt[, "pbt_0.0"])
+loglrposb[, "loglrposb_1.6"] <-
+  log(two ^ (9:99) - pbt[, "pbt_1.6"]) - log(two ^ (9:99) - pbt[, "pbt_0.0"])
+loglrposb[, "loglrposb_1.8"] <-
+  log(two ^ (9:99) - pbt[, "pbt_1.8"]) - log(two ^ (9:99) - pbt[, "pbt_0.0"])
+loglrposb[, "loglrposb_2.0"] <-
+  log(two ^ (9:99) - pbt[, "pbt_2.0"]) - log(two ^ (9:99) - pbt[, "pbt_0.0"])
+loglrposb[, "loglrposb_2.2"] <-
+  log(two ^ (9:99) - pbt[, "pbt_2.2"]) - log(two ^ (9:99) - pbt[, "pbt_0.0"])
+loglrposb[, "loglrposb_2.4"] <-
+  log(two ^ (9:99) - pbt[, "pbt_2.4"]) - log(two ^ (9:99) - pbt[, "pbt_0.0"])
+loglrposb[, "loglrposb_2.6"] <-
+  log(two ^ (9:99) - pbt[, "pbt_2.6"]) - log(two ^ (9:99) - pbt[, "pbt_0.0"])
+loglrposb[, "loglrposb_2.8"] <-
+  log(two ^ (9:99) - pbt[, "pbt_2.8"]) - log(two ^ (9:99) - pbt[, "pbt_0.0"])
+loglrposb[, "loglrposb_3.0"] <-
+  log(two ^ (9:99) - pbt[, "pbt_3.0"]) - log(two ^ (9:99) - pbt[, "pbt_0.0"])
+loglrposc[, "loglrposc_0.2"] <-
+  log(two ^ (9:99) - pct[, "pct_0.2"]) - log(two ^ (9:99) - pct[, "pct_0.0"])
+loglrposc[, "loglrposc_0.4"] <-
+  log(two ^ (9:99) - pct[, "pct_0.4"]) - log(two ^ (9:99) - pct[, "pct_0.0"])
+loglrposc[, "loglrposc_0.6"] <-
+  log(two ^ (9:99) - pct[, "pct_0.6"]) - log(two ^ (9:99) - pct[, "pct_0.0"])
+loglrposc[, "loglrposc_0.8"] <-
+  log(two ^ (9:99) - pct[, "pct_0.8"]) - log(two ^ (9:99) - pct[, "pct_0.0"])
+loglrposc[, "loglrposc_1.0"] <-
+  log(two ^ (9:99) - pct[, "pct_1.0"]) - log(two ^ (9:99) - pct[, "pct_0.0"])
+loglrposc[, "loglrposc_1.2"] <-
+  log(two ^ (9:99) - pct[, "pct_1.2"]) - log(two ^ (9:99) - pct[, "pct_0.0"])
+loglrposc[, "loglrposc_1.4"] <-
+  log(two ^ (9:99) - pct[, "pct_1.4"]) - log(two ^ (9:99) - pct[, "pct_0.0"])
+loglrposc[, "loglrposc_1.6"] <-
+  log(two ^ (9:99) - pct[, "pct_1.6"]) - log(two ^ (9:99) - pct[, "pct_0.0"])
+loglrposc[, "loglrposc_1.8"] <-
+  log(two ^ (9:99) - pct[, "pct_1.8"]) - log(two ^ (9:99) - pct[, "pct_0.0"])
+loglrposc[, "loglrposc_2.0"] <-
+  log(two ^ (9:99) - pct[, "pct_2.0"]) - log(two ^ (9:99) - pct[, "pct_0.0"])
+loglrposc[, "loglrposc_2.2"] <-
+  log(two ^ (9:99) - pct[, "pct_2.2"]) - log(two ^ (9:99) - pct[, "pct_0.0"])
+loglrposc[, "loglrposc_2.4"] <-
+  log(two ^ (9:99) - pct[, "pct_2.4"]) - log(two ^ (9:99) - pct[, "pct_0.0"])
+loglrposc[, "loglrposc_2.6"] <-
+  log(two ^ (9:99) - pct[, "pct_2.6"]) - log(two ^ (9:99) - pct[, "pct_0.0"])
+loglrposc[, "loglrposc_2.8"] <-
+  log(two ^ (9:99) - pct[, "pct_2.8"]) - log(two ^ (9:99) - pct[, "pct_0.0"])
+loglrposc[, "loglrposc_3.0"] <-
+  log(two ^ (9:99) - pct[, "pct_3.0"]) - log(two ^ (9:99) - pct[, "pct_0.0"])
+loglrnega[, "loglrnega_0.2"] <-
+  log(pat[, "pat_0.2"]) - log(pat[, "pat_0.0"])
+loglrnega[, "loglrnega_0.4"] <-
+  log(pat[, "pat_0.4"]) - log(pat[, "pat_0.0"])
+loglrnega[, "loglrnega_0.6"] <-
+  log(pat[, "pat_0.6"]) - log(pat[, "pat_0.0"])
+loglrnega[, "loglrnega_0.8"] <-
+  log(pat[, "pat_0.8"]) - log(pat[, "pat_0.0"])
+loglrnega[, "loglrnega_1.0"] <-
+  log(pat[, "pat_1.0"]) - log(pat[, "pat_0.0"])
+loglrnega[, "loglrnega_1.2"] <-
+  log(pat[, "pat_1.2"]) - log(pat[, "pat_0.0"])
+loglrnega[, "loglrnega_1.4"] <-
+  log(pat[, "pat_1.4"]) - log(pat[, "pat_0.0"])
+loglrnega[, "loglrnega_1.6"] <-
+  log(pat[, "pat_1.6"]) - log(pat[, "pat_0.0"])
+loglrnega[, "loglrnega_1.8"] <-
+  log(pat[, "pat_1.8"]) - log(pat[, "pat_0.0"])
+loglrnega[, "loglrnega_2.0"] <-
+  log(pat[, "pat_2.0"]) - log(pat[, "pat_0.0"])
+loglrnega[, "loglrnega_2.2"] <-
+  log(pat[, "pat_2.2"]) - log(pat[, "pat_0.0"])
+loglrnega[, "loglrnega_2.4"] <-
+  log(pat[, "pat_2.4"]) - log(pat[, "pat_0.0"])
+loglrnega[, "loglrnega_2.6"] <-
+  log(pat[, "pat_2.6"]) - log(pat[, "pat_0.0"])
+loglrnega[, "loglrnega_2.8"] <-
+  log(pat[, "pat_2.8"]) - log(pat[, "pat_0.0"])
+loglrnega[, "loglrnega_3.0"] <-
+  log(pat[, "pat_3.0"]) - log(pat[, "pat_0.0"])
+loglrnegb[, "loglrnegb_0.2"] <-
+  log(pbt[, "pbt_0.2"]) - log(pbt[, "pbt_0.0"])
+loglrnegb[, "loglrnegb_0.4"] <-
+  log(pbt[, "pbt_0.4"]) - log(pbt[, "pbt_0.0"])
+loglrnegb[, "loglrnegb_0.6"] <-
+  log(pbt[, "pbt_0.6"]) - log(pbt[, "pbt_0.0"])
+loglrnegb[, "loglrnegb_0.8"] <-
+  log(pbt[, "pbt_0.8"]) - log(pbt[, "pbt_0.0"])
+loglrnegb[, "loglrnegb_1.0"] <-
+  log(pbt[, "pbt_1.0"]) - log(pbt[, "pbt_0.0"])
+loglrnegb[, "loglrnegb_1.2"] <-
+  log(pbt[, "pbt_1.2"]) - log(pbt[, "pbt_0.0"])
+loglrnegb[, "loglrnegb_1.4"] <-
+  log(pbt[, "pbt_1.4"]) - log(pbt[, "pbt_0.0"])
+loglrnegb[, "loglrnegb_1.6"] <-
+  log(pbt[, "pbt_1.6"]) - log(pbt[, "pbt_0.0"])
+loglrnegb[, "loglrnegb_1.8"] <-
+  log(pbt[, "pbt_1.8"]) - log(pbt[, "pbt_0.0"])
+loglrnegb[, "loglrnegb_2.0"] <-
+  log(pbt[, "pbt_2.0"]) - log(pbt[, "pbt_0.0"])
+loglrnegb[, "loglrnegb_2.2"] <-
+  log(pbt[, "pbt_2.2"]) - log(pbt[, "pbt_0.0"])
+loglrnegb[, "loglrnegb_2.4"] <-
+  log(pbt[, "pbt_2.4"]) - log(pbt[, "pbt_0.0"])
+loglrnegb[, "loglrnegb_2.6"] <-
+  log(pbt[, "pbt_2.6"]) - log(pbt[, "pbt_0.0"])
+loglrnegb[, "loglrnegb_2.8"] <-
+  log(pbt[, "pbt_2.8"]) - log(pbt[, "pbt_0.0"])
+loglrnegb[, "loglrnegb_3.0"] <-
+  log(pbt[, "pbt_3.0"]) - log(pbt[, "pbt_0.0"])
+loglrnegc[, "loglrnegc_0.2"] <-
+  log(pct[, "pct_0.2"]) - log(pct[, "pct_0.0"])
+loglrnegc[, "loglrnegc_0.4"] <-
+  log(pct[, "pct_0.4"]) - log(pct[, "pct_0.0"])
+loglrnegc[, "loglrnegc_0.6"] <-
+  log(pct[, "pct_0.6"]) - log(pct[, "pct_0.0"])
+loglrnegc[, "loglrnegc_0.8"] <-
+  log(pct[, "pct_0.8"]) - log(pct[, "pct_0.0"])
+loglrnegc[, "loglrnegc_1.0"] <-
+  log(pct[, "pct_1.0"]) - log(pct[, "pct_0.0"])
+loglrnegc[, "loglrnegc_1.2"] <-
+  log(pct[, "pct_1.2"]) - log(pct[, "pct_0.0"])
+loglrnegc[, "loglrnegc_1.4"] <-
+  log(pct[, "pct_1.4"]) - log(pct[, "pct_0.0"])
+loglrnegc[, "loglrnegc_1.6"] <-
+  log(pct[, "pct_1.6"]) - log(pct[, "pct_0.0"])
+loglrnegc[, "loglrnegc_1.8"] <-
+  log(pct[, "pct_1.8"]) - log(pct[, "pct_0.0"])
+loglrnegc[, "loglrnegc_2.0"] <-
+  log(pct[, "pct_2.0"]) - log(pct[, "pct_0.0"])
+loglrnegc[, "loglrnegc_2.2"] <-
+  log(pct[, "pct_2.2"]) - log(pct[, "pct_0.0"])
+loglrnegc[, "loglrnegc_2.4"] <-
+  log(pct[, "pct_2.4"]) - log(pct[, "pct_0.0"])
+loglrnegc[, "loglrnegc_2.6"] <-
+  log(pct[, "pct_2.6"]) - log(pct[, "pct_0.0"])
+loglrnegc[, "loglrnegc_2.8"] <-
+  log(pct[, "pct_2.8"]) - log(pct[, "pct_0.0"])
+loglrnegc[, "loglrnegc_3.0"] <-
+  log(pct[, "pct_3.0"]) - log(pct[, "pct_0.0"])
 
 # include probability information in extended bounds:
 pa <- pat
@@ -499,40 +544,46 @@ prec.use <- 120
 one <- mpfr(1, prec.use)
 two <- mpfr(2, prec.use)
 mone <- mpfr(-1, prec.use)
-
 for (var in 1:16) pa[,var] <- pat[,var]/(two^(9:99))
 for (var in 1:16) pb[,var] <- pbt[,var]/(two^(9:99))
 for (var in 1:16) pc[,var] <- pct[,var]/(two^(9:99))
 
-boundspl <- cbind(
-  bounds, 
+boundspll <- cbind(
+  bounds,
   asNumeric(pa), asNumeric(pb), asNumeric(pc),
-  asNumeric(lrposa), asNumeric(lrposb), asNumeric(lrposc),
-  asNumeric(lrnega), asNumeric(lrnegb), asNumeric(lrnegc)) 
+  asNumeric(loglrposa), asNumeric(loglrposb), asNumeric(loglrposc),
+  asNumeric(loglrnega), asNumeric(loglrnegb), asNumeric(loglrnegc)
+)
 
-names(boundspl)[8:55] <- paste0(
-  substr(names(boundspl)[8:55],1,2),
-  substr(names(boundspl)[8:55],4,7))
+# names(boundspll)
+# names(boundspll)[8:55]
+names(boundspll)[8:55] <-
+  paste0(substr(names(boundspll)[8:55], 1, 2),
+         substr(names(boundspll)[8:55], 4, 7))
 
-# save objects:
-save(bounds, boundspl,
-     pat, pbt, pct,
-     pa, pb, pc,
-     lrposa, lrposb, lrposc,
-     lrnega, lrnegb, lrnegc,
-     file = "data/boundspl.Rdata")
+# save boundspll with Rmpfr background arrays:
+save(
+  boundspll,
+  pat, pbt, pct,
+  pa, pb, pc,
+  loglrposa, loglrposb, loglrposc,
+  loglrnega, loglrnegb, loglrnegc,
+  file = "data/boundspll.Rdata"
+)
 
+# save crs100 Rmpfr arrays
 save(list = ls(pattern = 'crs100_'), 
      file="data/crs100.RData")
 
-# Save data for box figures
-x <- list(
-  x0 = lapply(crs100_0.0, asNumeric),
-  x1 = lapply(crs100_1.0, asNumeric),
-  x2 = lapply(crs100_2.0, asNumeric))
+# save crossrun distribution arrays
+x <- lapply(crs100_0.0, asNumeric)
+saveRDS(x, 'data/cr_dist.rds')
 
-saveRDS(x, 'data/x.rds')
+# save box limits and probabilities
+saveRDS(boundspll, 'data/cr_bounds.rds')
 
-# save(lrposa, lrposb, lrposc, lrnega, lrnegb, lrnegc, file = "lr.RData")
-# save(bounds, file = "bounds.Rdata")
-# save(pat, pbt, pct, file = "pt.RData")
+# save(bounds, file="bounds.Rdata")
+# save(pat,pbt,pct,file="pt.RData")
+
+# save loglr objects:
+# save(loglrposa,loglrposb,loglrposc,loglrnega,loglrnegb,loglrnegc, file="loglr.RData")

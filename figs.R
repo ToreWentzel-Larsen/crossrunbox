@@ -1,12 +1,11 @@
 # Setup ----
 library(tidyverse)
-library(crossrun)
 
-load('data/boundspl.Rdata')
-x <- read_rds('data/x.rds')
+x      <- read_rds('data/cr_dist.rds')
+bounds <- read_rds('data/cr_bounds.rds')
 
 ## Tall bounds data
-limits <- boundspl %>% 
+limits <- bounds %>% 
   select(n:lb) %>% 
   gather('key', 'val', -n) %>% 
   separate(key, c('test', 'rule'), 1) %>% 
@@ -15,7 +14,7 @@ limits <- boundspl %>%
          rule = fct_recode(rule, anhoej = 'a',
                            `best box` = 'b'))
 ## Tall parameter value data
-vals <- boundspl %>% 
+vals <- bounds %>% 
   select(-(ca:lbord)) %>%
   gather('key', 'val', -n) %>% 
   separate(key, c('test', 'shift'), '_') %>% 
@@ -24,7 +23,8 @@ vals <- boundspl %>%
          shift = as.numeric(shift)) %>% 
   mutate(rule = fct_recode(rule, anhoej = 'a',
                            `best box` = 'b',
-                           `cut box` = 'c'))
+                           `cut box` = 'c')) %>% 
+  spread(test, val)
 
 # Compare limits from anhoej and best box rules ----
 ggplot(limits, aes(n, val, colour = rule)) +
@@ -34,7 +34,7 @@ ggplot(limits, aes(n, val, colour = rule)) +
   theme_minimal()
 
 # Plot power function ----
-ggplot(filter(vals, test == 'p'), aes(n, 1 - val, colour = rule)) +
+ggplot(vals, aes(n, 1 - p, colour = rule)) +
   geom_line() +
   facet_wrap(~ shift) +
   scale_x_continuous(breaks = seq(20, 100, by = 20)) +
@@ -44,7 +44,7 @@ ggplot(filter(vals, test == 'p'), aes(n, 1 - val, colour = rule)) +
        x = 'N')
 
 ## Specificity
-ggplot(filter(vals, test == 'p', shift == 0), aes(n, val, colour = rule)) +
+ggplot(filter(vals, shift == 0), aes(n, p, colour = rule)) +
   geom_line() +
   scale_x_continuous(breaks = seq(20, 100, by = 20)) +
   theme_minimal() +
@@ -54,7 +54,7 @@ ggplot(filter(vals, test == 'p', shift == 0), aes(n, val, colour = rule)) +
 
 # Plot likelihood ratios ----
 ## LR+
-ggplot(filter(vals, test == 'lrpos'), aes(n, val, colour = rule)) +
+ggplot(filter(vals, !is.na(loglrpos)), aes(n, exp(loglrpos), colour = rule)) +
   geom_line() +
   geom_hline(yintercept = 10) +
   facet_wrap(~ shift, ncol = 5) +
@@ -66,7 +66,7 @@ ggplot(filter(vals, test == 'lrpos'), aes(n, val, colour = rule)) +
        x = 'N')
 
 ## LR-
-ggplot(filter(vals, test == 'lrneg'), aes(n, val, colour = rule)) +
+ggplot(filter(vals, !is.na(loglrpos)), aes(n, exp(loglrneg), colour = rule)) +
   geom_line() +
   geom_hline(yintercept = 0.1) +
   facet_wrap(~ shift, ncol = 5) +
@@ -78,18 +78,19 @@ ggplot(filter(vals, test == 'lrneg'), aes(n, val, colour = rule)) +
        x = 'N')
 
 # Function to plot LC box figures ----
-crplot <- function(n = 12, shift = 0, labels = T, prop = F, round = 1) {
+crplot <- function(n = 12, labels = T, prop = F, round = 1) {
   ca <- bounds$ca[bounds$n == n]
   la <- bounds$la[bounds$n == n]
-  pa <- bounds[n, paste0('pa_', shift, '.0')]
+  pa <- bounds[bounds$n == n, 'pa_0.0']
   cb <- bounds$cb[bounds$n == n]
   lb <- bounds$lb[bounds$n == n]
-  pb <- bounds[n, paste0('pb_', shift, '.0')]
+  pb <- bounds[bounds$n == n, 'pb_0.0']
   cbord <- bounds$cbord[bounds$n == n]
   lbord <- bounds$lbord[bounds$n == n]
-  pc <- bounds[n, paste0('pc_', shift, '.0')]
+  pc <- bounds[bounds$n == n, 'pc_0.0']
   
-  m <- x[[paste0('x', shift)]][[paste0('pt', n)]]
+  # m <- x[[paste0('x', shift)]][[paste0('pt', n)]]
+  m <- x[[paste0('pt', n)]]
   
   d <- m %>% 
     as_tibble(rownames = NA) %>% 
@@ -154,23 +155,22 @@ crplot <- function(n = 12, shift = 0, labels = T, prop = F, round = 1) {
           axis.title.x = element_text(hjust = 0),
           panel.grid.major = element_blank(),
           aspect.ratio = 1,
-          legend.position = 'none')
-  # +
-  #   labs(caption = paste('N =',
-  #                        n,
-  #                        '\nShift =',
-  #                        shift,
-  #                        '\nProportion captured by Anhøj rules =',
-  #                        round(pa, 3)))
+          legend.position = 'none') +
+    labs(caption = paste0('N =',
+                         n,
+                         '\nRules specificity: ',
+                         'Anhøj = ', round(pa, 3), ', ',
+                         'Best Box = ', round(pb, 3), ', ',
+                         'Cut Box = ', round(pc, 3)))
   plot(p)
 }
 
-# crplot(10, labels = F)
-# crplot(11, labels = F)
-# crplot(15, labels = F)
+crplot(10, labels = F)
+crplot(11, labels = F)
+crplot(15, labels = F)
 crplot(16, labels = F)
-# crplot(19, labels = F)
-# crplot(24, labels = F)
-# crplot(47, labels = F)
-# crplot(52, labels = F)
-# crplot(70, labels = F)
+crplot(19, labels = F)
+crplot(24, labels = F)
+crplot(47, labels = F)
+crplot(52, labels = F)
+crplot(70, labels = F)
