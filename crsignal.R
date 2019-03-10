@@ -83,20 +83,14 @@ crsignal <- function(n, c, l, method = c('anhoej', 'bestbox', 'cutbox')) {
   
   return(res)
 }
-    
-crsignal(18, 5, 7)
-crsignal(18, 5, 8)
-crsignal(18, 4, 7)
-crsignal(18, 5, 7, 'bestbox')
-crsignal(18, 5, 8, 'bestbox')
-crsignal(18, 4, 7, 'bestbox')
-crsignal(18, 5, 7, 'cutbox')
-crsignal(18, 5, 8, 'cutbox')
-crsignal(18, 4, 7, 'cutbox')
-crsignal(18, 5, 6, 'cutbox')
-crsignal(18, 6, 7, 'cutbox')
 
-crsignal(9, 3, 3, method = 'b')
-crsignal(11, 3, 13)
-crsignal(11, 11, 11)
+crsignal(11, 2, 6, 'a')
+crsignal(11, 2, 6, 'b')
+crsignal(11, 2, 6, 'c')
+crsignal(11, 3, 7, 'a')
+crsignal(11, 3, 7, 'b')
+crsignal(11, 3, 7, 'c')
+crsignal(11, 4, 7, 'a')
+crsignal(11, 4, 7, 'b')
+crsignal(11, 4, 7, 'c')
 
