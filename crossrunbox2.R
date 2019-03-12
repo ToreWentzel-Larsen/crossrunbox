@@ -237,14 +237,14 @@ for (s in shiftsc[shifts > 0]) {
   loglrnegc1 <- paste0('loglrnegc_', s)
   
   loglrposa[, loglrposa1] <-
-    log(two ^ (9:(nmax - 1)) - pat[, pats]) - 
-    log(two ^ (9:(nmax - 1)) - pat[, "pat_0.0"])
+    log(two ^ (nmin:nmax - 1) - pat[, pats]) - 
+    log(two ^ (nmin:nmax - 1) - pat[, "pat_0.0"])
   loglrposb[, loglrposb1] <-
-    log(two ^ (9:(nmax - 1)) - pbt[, pbts]) - 
-    log(two ^ (9:(nmax - 1)) - pbt[, "pbt_0.0"])
+    log(two ^ (nmin:nmax - 1) - pbt[, pbts]) - 
+    log(two ^ (nmin:nmax - 1) - pbt[, "pbt_0.0"])
   loglrposc[, loglrposc1] <-
-    log(two ^ (9:(nmax - 1)) - pct[, pcts]) - 
-    log(two ^ (9:(nmax - 1)) - pct[, "pct_0.0"])
+    log(two ^ (nmin:nmax - 1) - pct[, pcts]) - 
+    log(two ^ (nmin:nmax - 1) - pct[, "pct_0.0"])
   
   loglrnega[, loglrnega1] <-
     log(pat[, pats]) - log(pat[, "pat_0.0"])
@@ -255,9 +255,9 @@ for (s in shiftsc[shifts > 0]) {
 }
 
 # Create bounds table including probability information ----
-pa <- pat / (two^(9:(nmax - 1)))
-pb <- pbt / (two^(9:(nmax - 1)))
-pc <- pct / (two^(9:(nmax - 1)))
+pa <- pat / (two ^ (nmin:nmax - 1))
+pb <- pbt / (two ^ (nmin:nmax - 1))
+pc <- pct / (two ^ (nmin:nmax - 1))
 
 boundspll <- cbind(
   bounds,
