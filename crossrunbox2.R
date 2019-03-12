@@ -255,19 +255,9 @@ for (s in shiftsc[shifts > 0]) {
 }
 
 # Create bounds table including probability information ----
-pa <- pat
-pb <- pbt
-pc <- pct
-# prec.use <- 120
-# one <- mpfr(1, prec.use)
-# two <- mpfr(2, prec.use)
-# mone <- mpfr(-1, prec.use)
-
-for (var in 1:nshifts) {
-  pa[, var] <- pat[, var] / (two ^ (9:(nmax - 1)))
-  pb[, var] <- pbt[, var] / (two ^ (9:(nmax - 1)))
-  pc[, var] <- pct[, var] / (two ^ (9:(nmax - 1)))
-}
+pa <- pat / (two^(9:(nmax - 1)))
+pb <- pbt / (two^(9:(nmax - 1)))
+pc <- pct / (two^(9:(nmax - 1)))
 
 boundspll <- cbind(
   bounds,
@@ -276,9 +266,8 @@ boundspll <- cbind(
   asNumeric(loglrnega), asNumeric(loglrnegb), asNumeric(loglrnegc)
 )
 
-names(boundspll) <- sub('pat', 'pa', names(boundspll))
-names(boundspll) <- sub('pbt', 'pb', names(boundspll))
-names(boundspll) <- sub('pct', 'pc', names(boundspll))
+names(boundspll) <- sub("(^p.{1}).", "\\1\\", names(boundspll))
+
 
 # Save objects ----
 ## save boundspll with Rmpfr background arrays:
@@ -291,13 +280,14 @@ names(boundspll) <- sub('pct', 'pc', names(boundspll))
 #   file = "data/boundspll.Rdata"
 # )
 # 
-# ## save crs100 Rmpfr arrays
-# save(list = ls(pattern = 'crs100_'), 
-#      file="data/crs100.RData")
+# ## save crs Rmpfr arrays
+# saveRDS(crs, "data/crsrds")
 # 
-# ## save crossrun distribution arrays
-# x <- lapply(crs100_0.0, asNumeric)
-# saveRDS(x, 'data/cr_dist.rds')
+# ## save crs numeric arrays
+# cr_num <- lapply(crs, function(x) {
+#   lapply(x, asNumeric)
+# })
+# saveRDS(cr_num, 'data/cr_num.rds')
 # 
 # ## save box limits and probabilities
 # saveRDS(boundspll, 'data/cr_bounds.rds')
