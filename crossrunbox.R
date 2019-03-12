@@ -1,12 +1,22 @@
 library(Rmpfr)
 library(crossrun)
 
-# function for box with lowest probability for the target shift, among boxes
-# with probability >=  target for shift 0. only boxes with positive corner
-# probability considered. subsequent deletion within the border if possible is
-# placed in separate function taken c and l for this box as input:
-bestbox <- function(pt0    = crs100_0.0,
-                    pts    = crs100_0.8,
+# Set parameters ----
+nmin     <- 10
+nmax     <- 100
+shifts   <- seq(0, 3, by = 0.2)
+prec.use <- 120
+one      <- mpfr(1, prec.use)
+two      <- mpfr(2, prec.use)
+mone     <- mpfr(-1, prec.use)
+shiftsc  <- format(shifts, nsmall = 1)
+nshifts  <- length(shifts)
+
+# bestbox function ----
+## Function for box with lowest probability for the target shift, among boxes
+## with probability >= target for shift 0.
+bestbox <- function(pt0    = crs$pt_0.0,
+                    pts    = crs$pt_0.8,
                     target = 0.925,
                     n1     = 100,
                     mult   = 2,
@@ -33,16 +43,17 @@ bestbox <- function(pt0    = crs100_0.0,
         l1 <- ll
         boxprt <- bpttarg[cc + 1, ll]
       }
-    } # end search through (c,l) with positive no (,l)
-  return(c(c1, l1)) # only box so far, reduction later
+    } # end search through (c, l) with positive no (, l)
+  return(c(c1, l1))
 } # end function bestbox
 
-# function for cutting a box while keeping probability >= target for shift 0. No
-# cutting if the corner cannot be removed. If the corner may be removed, it is
-# attempted to remove parts of the border, starting from the corner, in the
-# direction with highest point probability for the target shift:
-cutbox <- function(pt0    = crs100_0.0,
-                   pts    = crs100_0.8,
+# cutbox function ----
+## Function for cutting a box while keeping probability >= target for shift 0. No
+## cutting if the corner cannot be removed. If the corner may be removed, it is
+## attempted to remove parts of the border, starting from the corner, in the
+## direction with highest point probability for the target shift:
+cutbox <- function(pt0    = crs$pt_0.0,
+                   pts    = crs$pt_0.8,
                    target = 0.925,
                    n1     = 100,
                    c1     = 41,
@@ -54,8 +65,7 @@ cutbox <- function(pt0    = crs100_0.0,
   two       <- mpfr(2, prec)
   multm     <- mpfr(mult, prec)
   targetm   <- mpfr(target, prec)
-  targt     <-
-    targetm * (multm ^ (n1 - 1)) # target on "times" scale
+  targt     <- targetm * (multm ^ (n1 - 1)) # target on "times" scale
   pt0n      <- pt0[[n1]]
   ptsn      <- pts[[n1]]
   bpt0      <-
@@ -126,464 +136,164 @@ cutbox <- function(pt0    = crs100_0.0,
   return(c(cbord, lbord))
 } # end function cutbox
 
-# compute simultaneous distributions for n = 1, ..., 100 in the symmetric case:
-crs100_0.0 <- crossrunsymm(100, printn = TRUE)$pt
-
-# shift 0.2 to 3:
-crs100_0.2 <- crossrunshift(shift = 0.2, printn = TRUE)$pt
-crs100_0.4 <- crossrunshift(shift = 0.4, printn = TRUE)$pt
-crs100_0.6 <- crossrunshift(shift = 0.6, printn = TRUE)$pt
-crs100_0.8 <- crossrunshift(shift = 0.8, printn = TRUE)$pt
-crs100_1.0 <- crossrunshift(shift = 1.0, printn = TRUE)$pt
-crs100_1.2 <- crossrunshift(shift = 1.2, printn = TRUE)$pt
-crs100_1.4 <- crossrunshift(shift = 1.4, printn = TRUE)$pt
-crs100_1.6 <- crossrunshift(shift = 1.6, printn = TRUE)$pt
-crs100_1.8 <- crossrunshift(shift = 1.8, printn = TRUE)$pt
-crs100_2.0 <- crossrunshift(shift = 2.0, printn = TRUE)$pt
-crs100_2.2 <- crossrunshift(shift = 2.2, printn = TRUE)$pt
-crs100_2.4 <- crossrunshift(shift = 2.4, printn = TRUE)$pt
-crs100_2.6 <- crossrunshift(shift = 2.6, printn = TRUE)$pt
-crs100_2.8 <- crossrunshift(shift = 2.8, printn = TRUE)$pt
-crs100_3.0 <- crossrunshift(shift = 3.0, printn = TRUE)$pt
-
-# Table 1 in "Run charts revisited", PLOS ONE November 25, 2014:
-bounds <- data.frame(
-  n = 10:100,
-  ca = qbinom(0.05, 10:100 - 1, 0.5),
-  la = round(log2(10:100) + 3)
-)
-row.names(bounds) <- bounds$n
-
-# find alternative ("best") boxes:
-bounds$cb <- NA
-bounds$lb <- NA
-
-for (nn in 10:100) {
-  print(nn)
-  bounds[bounds$n == nn, c("cb", "lb")] <- bestbox(n1 = nn)
-}
-
-# find cutted  boxes:
-bounds$cbord <- NA
-bounds$lbord <- NA
-
-for (nn in 10:100) {
-  print(nn)
-  bounds[bounds$n == nn, c("cbord", "lbord")] <-
-    cutbox(n1 = nn,
-           c1 = bounds$cb[bounds$n == nn],
-           l1 = bounds$lb[bounds$n == nn])
-}
-
-# find no signal probabilities for the shifts, original and bestbox rules:
-# initialization:
-prec.use <- 120
-one <- mpfr(1, prec.use)
-two <- mpfr(2, prec.use)
-mone <- mpfr(-1, prec.use)
-
-# initialize to impossible (negative) value:
-pat <- mpfr2array(rep(mone, 91 * 16), dim = c(91, 16))
-rownames(pat) <- 10:100
-colnames(pat) <- paste0("pat_", rep(c(0, 1, 2, 3), c(5, 5, 5, 1)), ".",
-                        c(rep(c(0, 2, 4, 6, 8), 3), 0))
-pbt <- mpfr2array(rep(mone, 91 * 16), dim = c(91, 16))
-rownames(pbt) <- 10:100
-colnames(pbt) <-
-  paste0("pbt_", rep(c(0, 1, 2, 3), c(5, 5, 5, 1)), ".",
-         c(rep(c(0, 2, 4, 6, 8), 3), 0))
-pct <- mpfr2array(rep(mone, 91 * 16), dim = c(91, 16))
-rownames(pct) <- 10:100
-colnames(pct) <- paste0("pct_", rep(c(0, 1, 2, 3), c(5, 5, 5, 1)), ".",
-                        c(rep(c(0, 2, 4, 6, 8), 3), 0))
-
-# original boxes:
-for (nn in 10:100) {
-  print(nn)
-  ca1 <- bounds$ca[bounds$n == nn]
-  la1 <- bounds$la[bounds$n == nn]
-  pat[nn - 9, 1] <- sum(crs100_0.0[[nn]][(ca1 + 1):nn, 1:la1])
-  pat[nn - 9, 2] <- sum(crs100_0.2[[nn]][(ca1 + 1):nn, 1:la1])
-  pat[nn - 9, 3] <- sum(crs100_0.4[[nn]][(ca1 + 1):nn, 1:la1])
-  pat[nn - 9, 4] <- sum(crs100_0.6[[nn]][(ca1 + 1):nn, 1:la1])
-  pat[nn - 9, 5] <- sum(crs100_0.8[[nn]][(ca1 + 1):nn, 1:la1])
-  pat[nn - 9, 6] <- sum(crs100_1.0[[nn]][(ca1 + 1):nn, 1:la1])
-  pat[nn - 9, 7] <- sum(crs100_1.2[[nn]][(ca1 + 1):nn, 1:la1])
-  pat[nn - 9, 8] <- sum(crs100_1.4[[nn]][(ca1 + 1):nn, 1:la1])
-  pat[nn - 9, 9] <- sum(crs100_1.6[[nn]][(ca1 + 1):nn, 1:la1])
-  pat[nn - 9, 10] <- sum(crs100_1.8[[nn]][(ca1 + 1):nn, 1:la1])
-  pat[nn - 9, 11] <- sum(crs100_2.0[[nn]][(ca1 + 1):nn, 1:la1])
-  pat[nn - 9, 12] <- sum(crs100_2.2[[nn]][(ca1 + 1):nn, 1:la1])
-  pat[nn - 9, 13] <- sum(crs100_2.4[[nn]][(ca1 + 1):nn, 1:la1])
-  pat[nn - 9, 14] <- sum(crs100_2.6[[nn]][(ca1 + 1):nn, 1:la1])
-  pat[nn - 9, 15] <- sum(crs100_2.8[[nn]][(ca1 + 1):nn, 1:la1])
-  pat[nn - 9, 16] <- sum(crs100_3.0[[nn]][(ca1 + 1):nn, 1:la1])
-}
-
-# best boxes:
-for (nn in 10:100) {
-  print(nn)
-  cb1 <- bounds$cb[bounds$n == nn]
-  lb1 <- bounds$lb[bounds$n == nn]
-  pbt[nn-9, 1] <- sum(crs100_0.0[[nn]][(cb1 + 1):nn, 1:lb1])
-  pbt[nn-9, 2] <- sum(crs100_0.2[[nn]][(cb1 + 1):nn, 1:lb1])
-  pbt[nn-9, 3] <- sum(crs100_0.4[[nn]][(cb1 + 1):nn, 1:lb1])
-  pbt[nn-9, 4] <- sum(crs100_0.6[[nn]][(cb1 + 1):nn, 1:lb1])
-  pbt[nn-9, 5] <- sum(crs100_0.8[[nn]][(cb1 + 1):nn, 1:lb1])
-  pbt[nn-9, 6] <- sum(crs100_1.0[[nn]][(cb1 + 1):nn, 1:lb1])
-  pbt[nn-9, 7] <- sum(crs100_1.2[[nn]][(cb1 + 1):nn, 1:lb1])
-  pbt[nn-9, 8] <- sum(crs100_1.4[[nn]][(cb1 + 1):nn, 1:lb1])
-  pbt[nn-9, 9] <- sum(crs100_1.6[[nn]][(cb1 + 1):nn, 1:lb1])
-  pbt[nn-9, 10] <- sum(crs100_1.8[[nn]][(cb1 + 1):nn, 1:lb1])
-  pbt[nn-9, 11] <- sum(crs100_2.0[[nn]][(cb1 + 1):nn, 1:lb1])
-  pbt[nn-9, 12] <- sum(crs100_2.2[[nn]][(cb1 + 1):nn, 1:lb1])
-  pbt[nn-9, 13] <- sum(crs100_2.4[[nn]][(cb1 + 1):nn, 1:lb1])
-  pbt[nn-9, 14] <- sum(crs100_2.6[[nn]][(cb1 + 1):nn, 1:lb1])
-  pbt[nn-9, 15] <- sum(crs100_2.8[[nn]][(cb1 + 1):nn, 1:lb1])
-  pbt[nn-9, 16] <- sum(crs100_3.0[[nn]][(cb1 + 1):nn, 1:lb1])
-}
-
-# cut boxes:
-pct <- pbt
-colnames(pct) <- paste0("pct_", rep(c(0, 1, 2, 3), c(5, 5, 5, 1)), ".",
-                        c(rep(c(0, 2, 4, 6, 8), 3), 0))
-
-for (nn in 10:100) {
-  print(nn)
-  cb1    <- bounds$cb[bounds$n == nn]
-  lb1    <- bounds$lb[bounds$n == nn]
-  cbord1 <- bounds$cbord[bounds$n == nn]
-  lbord1 <- bounds$lbord[bounds$n == nn]
-  if (is.na(cbord1) == 0) {
-    pct[nn - 9, 1] <- sum(crs100_0.0[[nn]][(cb1 + 2):nn, 1:(lb1 - 1)]) +
-      sum(crs100_0.0[[nn]][(cbord1 + 1):nn, lb1]) +
-      sum(crs100_0.0[[nn]][cb1 + 1, 1:lbord1])
-    pct[nn - 9, 2] <-
-      sum(crs100_0.2[[nn]][(cb1 + 2):nn, 1:(lb1 - 1)]) +
-      sum(crs100_0.2[[nn]][(cbord1 + 1):nn, lb1]) +
-      sum(crs100_0.2[[nn]][cb1 + 1, 1:lbord1])
-    pct[nn - 9, 3] <-
-      sum(crs100_0.4[[nn]][(cb1 + 2):nn, 1:(lb1 - 1)]) +
-      sum(crs100_0.4[[nn]][(cbord1 + 1):nn, lb1]) +
-      sum(crs100_0.4[[nn]][cb1 + 1, 1:lbord1])
-    pct[nn - 9, 4] <-
-      sum(crs100_0.6[[nn]][(cb1 + 2):nn, 1:(lb1 - 1)]) +
-      sum(crs100_0.6[[nn]][(cbord1 + 1):nn, lb1]) +
-      sum(crs100_0.6[[nn]][cb1 + 1, 1:lbord1])
-    pct[nn - 9, 5] <-
-      sum(crs100_0.8[[nn]][(cb1 + 2):nn, 1:(lb1 - 1)]) +
-      sum(crs100_0.8[[nn]][(cbord1 + 1):nn, lb1]) +
-      sum(crs100_0.8[[nn]][cb1 + 1, 1:lbord1])
-    pct[nn - 9, 6] <-
-      sum(crs100_1.0[[nn]][(cb1 + 2):nn, 1:(lb1 - 1)]) +
-      sum(crs100_1.0[[nn]][(cbord1 + 1):nn, lb1]) +
-      sum(crs100_1.0[[nn]][cb1 + 1, 1:lbord1])
-    pct[nn - 9, 7] <-
-      sum(crs100_1.2[[nn]][(cb1 + 2):nn, 1:(lb1 - 1)]) +
-      sum(crs100_1.2[[nn]][(cbord1 + 1):nn, lb1]) +
-      sum(crs100_1.2[[nn]][cb1 + 1, 1:lbord1])
-    pct[nn - 9, 8] <-
-      sum(crs100_1.4[[nn]][(cb1 + 2):nn, 1:(lb1 - 1)]) +
-      sum(crs100_1.4[[nn]][(cbord1 + 1):nn, lb1]) +
-      sum(crs100_1.4[[nn]][cb1 + 1, 1:lbord1])
-    pct[nn - 9, 9] <-
-      sum(crs100_1.6[[nn]][(cb1 + 2):nn, 1:(lb1 - 1)]) +
-      sum(crs100_1.6[[nn]][(cbord1 + 1):nn, lb1]) +
-      sum(crs100_1.6[[nn]][cb1 + 1, 1:lbord1])
-    pct[nn - 9, 10] <-
-      sum(crs100_1.8[[nn]][(cb1 + 2):nn, 1:(lb1 - 1)]) +
-      sum(crs100_1.8[[nn]][(cbord1 + 1):nn, lb1]) +
-      sum(crs100_1.8[[nn]][cb1 + 1, 1:lbord1])
-    pct[nn - 9, 11] <-
-      sum(crs100_2.0[[nn]][(cb1 + 2):nn, 1:(lb1 - 1)]) +
-      sum(crs100_2.0[[nn]][(cbord1 + 1):nn, lb1]) +
-      sum(crs100_2.0[[nn]][cb1 + 1, 1:lbord1])
-    pct[nn - 9, 12] <-
-      sum(crs100_2.2[[nn]][(cb1 + 2):nn, 1:(lb1 - 1)]) +
-      sum(crs100_2.2[[nn]][(cbord1 + 1):nn, lb1]) +
-      sum(crs100_2.2[[nn]][cb1 + 1, 1:lbord1])
-    pct[nn - 9, 13] <-
-      sum(crs100_2.4[[nn]][(cb1 + 2):nn, 1:(lb1 - 1)]) +
-      sum(crs100_2.4[[nn]][(cbord1 + 1):nn, lb1]) +
-      sum(crs100_2.4[[nn]][cb1 + 1, 1:lbord1])
-    pct[nn - 9, 14] <-
-      sum(crs100_2.6[[nn]][(cb1 + 2):nn, 1:(lb1 - 1)]) +
-      sum(crs100_2.6[[nn]][(cbord1 + 1):nn, lb1]) +
-      sum(crs100_2.6[[nn]][cb1 + 1, 1:lbord1])
-    pct[nn - 9, 15] <-
-      sum(crs100_2.8[[nn]][(cb1 + 2):nn, 1:(lb1 - 1)]) +
-      sum(crs100_2.8[[nn]][(cbord1 + 1):nn, lb1]) +
-      sum(crs100_2.8[[nn]][cb1 + 1, 1:lbord1])
-    pct[nn - 9, 16] <-
-      sum(crs100_3.0[[nn]][(cb1 + 2):nn, 1:(lb1 - 1)]) +
-      sum(crs100_3.0[[nn]][(cbord1 + 1):nn, lb1]) +
-      sum(crs100_3.0[[nn]][cb1 + 1, 1:lbord1])
+system.time({
+  
+  # Compute joint distributions of C and L for n = 1, ..., nmax ----
+  crs <- list()
+  for (s in shifts) {
+    r <- paste0('pt_', format(s, nsmall = 1))
+    print(paste('Joint distribution:', r))
+    crs[[r]] <- crossrunshift(nmax, s)$pt
   }
-}
-
-# computation of log likelihood ratios:
-# initialization to impossible (negative) value:
-loglrposa <- mpfr2array(rep(mone, 91 * 15), dim = c(91, 15))
-rownames(loglrposa) <- 10:100
-colnames(loglrposa) <-
-  paste0("loglrposa_", rep(c(0, 1, 2, 3), c(4, 5, 5, 1)), ".",
-         rep(c(2, 4, 6, 8, 0), 3))
-loglrposb <- mpfr2array(rep(mone, 91 * 15), dim = c(91, 15))
-rownames(loglrposb) <- 10:100
-colnames(loglrposb) <-
-  paste0("loglrposb_", rep(c(0, 1, 2, 3), c(4, 5, 5, 1)), ".",
-         rep(c(2, 4, 6, 8, 0), 3))
-loglrposc <- mpfr2array(rep(mone, 91 * 15), dim = c(91, 15))
-rownames(loglrposc) <- 10:100
-colnames(loglrposc) <-
-  paste0("loglrposc_", rep(c(0, 1, 2, 3), c(4, 5, 5, 1)), ".",
-         rep(c(2, 4, 6, 8, 0), 3))
-loglrnega <- mpfr2array(rep(mone, 91 * 15), dim = c(91, 15))
-rownames(loglrnega) <- 10:100
-colnames(loglrnega) <-
-  paste0("loglrnega_", rep(c(0, 1, 2, 3), c(4, 5, 5, 1)), ".",
-         rep(c(2, 4, 6, 8, 0), 3))
-loglrnegb <- mpfr2array(rep(mone, 91 * 15), dim = c(91, 15))
-rownames(loglrnegb) <- 10:100
-colnames(loglrnegb) <-
-  paste0("loglrnegb_", rep(c(0, 1, 2, 3), c(4, 5, 5, 1)), ".",
-         rep(c(2, 4, 6, 8, 0), 3))
-loglrnegc <- mpfr2array(rep(mone, 91 * 15), dim = c(91, 15))
-rownames(loglrnegc) <- 10:100
-colnames(loglrnegc) <-
-  paste0("loglrnegc_", rep(c(0, 1, 2, 3), c(4, 5, 5, 1)), ".",
-         rep(c(2, 4, 6, 8, 0), 3))
-
-# computation:
-loglrposa[, "loglrposa_0.2"] <-
-  log(two ^ (9:99) - pat[, "pat_0.2"]) - log(two ^ (9:99) - pat[, "pat_0.0"])
-loglrposa[, "loglrposa_0.4"] <-
-  log(two ^ (9:99) - pat[, "pat_0.4"]) - log(two ^ (9:99) - pat[, "pat_0.0"])
-loglrposa[, "loglrposa_0.6"] <-
-  log(two ^ (9:99) - pat[, "pat_0.6"]) - log(two ^ (9:99) - pat[, "pat_0.0"])
-loglrposa[, "loglrposa_0.8"] <-
-  log(two ^ (9:99) - pat[, "pat_0.8"]) - log(two ^ (9:99) - pat[, "pat_0.0"])
-loglrposa[, "loglrposa_1.0"] <-
-  log(two ^ (9:99) - pat[, "pat_1.0"]) - log(two ^ (9:99) - pat[, "pat_0.0"])
-loglrposa[, "loglrposa_1.2"] <-
-  log(two ^ (9:99) - pat[, "pat_1.2"]) - log(two ^ (9:99) - pat[, "pat_0.0"])
-loglrposa[, "loglrposa_1.4"] <-
-  log(two ^ (9:99) - pat[, "pat_1.4"]) - log(two ^ (9:99) - pat[, "pat_0.0"])
-loglrposa[, "loglrposa_1.6"] <-
-  log(two ^ (9:99) - pat[, "pat_1.6"]) - log(two ^ (9:99) - pat[, "pat_0.0"])
-loglrposa[, "loglrposa_1.8"] <-
-  log(two ^ (9:99) - pat[, "pat_1.8"]) - log(two ^ (9:99) - pat[, "pat_0.0"])
-loglrposa[, "loglrposa_2.0"] <-
-  log(two ^ (9:99) - pat[, "pat_2.0"]) - log(two ^ (9:99) - pat[, "pat_0.0"])
-loglrposa[, "loglrposa_2.2"] <-
-  log(two ^ (9:99) - pat[, "pat_2.2"]) - log(two ^ (9:99) - pat[, "pat_0.0"])
-loglrposa[, "loglrposa_2.4"] <-
-  log(two ^ (9:99) - pat[, "pat_2.4"]) - log(two ^ (9:99) - pat[, "pat_0.0"])
-loglrposa[, "loglrposa_2.6"] <-
-  log(two ^ (9:99) - pat[, "pat_2.6"]) - log(two ^ (9:99) - pat[, "pat_0.0"])
-loglrposa[, "loglrposa_2.8"] <-
-  log(two ^ (9:99) - pat[, "pat_2.8"]) - log(two ^ (9:99) - pat[, "pat_0.0"])
-loglrposa[, "loglrposa_3.0"] <-
-  log(two ^ (9:99) - pat[, "pat_3.0"]) - log(two ^ (9:99) - pat[, "pat_0.0"])
-loglrposb[, "loglrposb_0.2"] <-
-  log(two ^ (9:99) - pbt[, "pbt_0.2"]) - log(two ^ (9:99) - pbt[, "pbt_0.0"])
-loglrposb[, "loglrposb_0.4"] <-
-  log(two ^ (9:99) - pbt[, "pbt_0.4"]) - log(two ^ (9:99) - pbt[, "pbt_0.0"])
-loglrposb[, "loglrposb_0.6"] <-
-  log(two ^ (9:99) - pbt[, "pbt_0.6"]) - log(two ^ (9:99) - pbt[, "pbt_0.0"])
-loglrposb[, "loglrposb_0.8"] <-
-  log(two ^ (9:99) - pbt[, "pbt_0.8"]) - log(two ^ (9:99) - pbt[, "pbt_0.0"])
-loglrposb[, "loglrposb_1.0"] <-
-  log(two ^ (9:99) - pbt[, "pbt_1.0"]) - log(two ^ (9:99) - pbt[, "pbt_0.0"])
-loglrposb[, "loglrposb_1.2"] <-
-  log(two ^ (9:99) - pbt[, "pbt_1.2"]) - log(two ^ (9:99) - pbt[, "pbt_0.0"])
-loglrposb[, "loglrposb_1.4"] <-
-  log(two ^ (9:99) - pbt[, "pbt_1.4"]) - log(two ^ (9:99) - pbt[, "pbt_0.0"])
-loglrposb[, "loglrposb_1.6"] <-
-  log(two ^ (9:99) - pbt[, "pbt_1.6"]) - log(two ^ (9:99) - pbt[, "pbt_0.0"])
-loglrposb[, "loglrposb_1.8"] <-
-  log(two ^ (9:99) - pbt[, "pbt_1.8"]) - log(two ^ (9:99) - pbt[, "pbt_0.0"])
-loglrposb[, "loglrposb_2.0"] <-
-  log(two ^ (9:99) - pbt[, "pbt_2.0"]) - log(two ^ (9:99) - pbt[, "pbt_0.0"])
-loglrposb[, "loglrposb_2.2"] <-
-  log(two ^ (9:99) - pbt[, "pbt_2.2"]) - log(two ^ (9:99) - pbt[, "pbt_0.0"])
-loglrposb[, "loglrposb_2.4"] <-
-  log(two ^ (9:99) - pbt[, "pbt_2.4"]) - log(two ^ (9:99) - pbt[, "pbt_0.0"])
-loglrposb[, "loglrposb_2.6"] <-
-  log(two ^ (9:99) - pbt[, "pbt_2.6"]) - log(two ^ (9:99) - pbt[, "pbt_0.0"])
-loglrposb[, "loglrposb_2.8"] <-
-  log(two ^ (9:99) - pbt[, "pbt_2.8"]) - log(two ^ (9:99) - pbt[, "pbt_0.0"])
-loglrposb[, "loglrposb_3.0"] <-
-  log(two ^ (9:99) - pbt[, "pbt_3.0"]) - log(two ^ (9:99) - pbt[, "pbt_0.0"])
-loglrposc[, "loglrposc_0.2"] <-
-  log(two ^ (9:99) - pct[, "pct_0.2"]) - log(two ^ (9:99) - pct[, "pct_0.0"])
-loglrposc[, "loglrposc_0.4"] <-
-  log(two ^ (9:99) - pct[, "pct_0.4"]) - log(two ^ (9:99) - pct[, "pct_0.0"])
-loglrposc[, "loglrposc_0.6"] <-
-  log(two ^ (9:99) - pct[, "pct_0.6"]) - log(two ^ (9:99) - pct[, "pct_0.0"])
-loglrposc[, "loglrposc_0.8"] <-
-  log(two ^ (9:99) - pct[, "pct_0.8"]) - log(two ^ (9:99) - pct[, "pct_0.0"])
-loglrposc[, "loglrposc_1.0"] <-
-  log(two ^ (9:99) - pct[, "pct_1.0"]) - log(two ^ (9:99) - pct[, "pct_0.0"])
-loglrposc[, "loglrposc_1.2"] <-
-  log(two ^ (9:99) - pct[, "pct_1.2"]) - log(two ^ (9:99) - pct[, "pct_0.0"])
-loglrposc[, "loglrposc_1.4"] <-
-  log(two ^ (9:99) - pct[, "pct_1.4"]) - log(two ^ (9:99) - pct[, "pct_0.0"])
-loglrposc[, "loglrposc_1.6"] <-
-  log(two ^ (9:99) - pct[, "pct_1.6"]) - log(two ^ (9:99) - pct[, "pct_0.0"])
-loglrposc[, "loglrposc_1.8"] <-
-  log(two ^ (9:99) - pct[, "pct_1.8"]) - log(two ^ (9:99) - pct[, "pct_0.0"])
-loglrposc[, "loglrposc_2.0"] <-
-  log(two ^ (9:99) - pct[, "pct_2.0"]) - log(two ^ (9:99) - pct[, "pct_0.0"])
-loglrposc[, "loglrposc_2.2"] <-
-  log(two ^ (9:99) - pct[, "pct_2.2"]) - log(two ^ (9:99) - pct[, "pct_0.0"])
-loglrposc[, "loglrposc_2.4"] <-
-  log(two ^ (9:99) - pct[, "pct_2.4"]) - log(two ^ (9:99) - pct[, "pct_0.0"])
-loglrposc[, "loglrposc_2.6"] <-
-  log(two ^ (9:99) - pct[, "pct_2.6"]) - log(two ^ (9:99) - pct[, "pct_0.0"])
-loglrposc[, "loglrposc_2.8"] <-
-  log(two ^ (9:99) - pct[, "pct_2.8"]) - log(two ^ (9:99) - pct[, "pct_0.0"])
-loglrposc[, "loglrposc_3.0"] <-
-  log(two ^ (9:99) - pct[, "pct_3.0"]) - log(two ^ (9:99) - pct[, "pct_0.0"])
-loglrnega[, "loglrnega_0.2"] <-
-  log(pat[, "pat_0.2"]) - log(pat[, "pat_0.0"])
-loglrnega[, "loglrnega_0.4"] <-
-  log(pat[, "pat_0.4"]) - log(pat[, "pat_0.0"])
-loglrnega[, "loglrnega_0.6"] <-
-  log(pat[, "pat_0.6"]) - log(pat[, "pat_0.0"])
-loglrnega[, "loglrnega_0.8"] <-
-  log(pat[, "pat_0.8"]) - log(pat[, "pat_0.0"])
-loglrnega[, "loglrnega_1.0"] <-
-  log(pat[, "pat_1.0"]) - log(pat[, "pat_0.0"])
-loglrnega[, "loglrnega_1.2"] <-
-  log(pat[, "pat_1.2"]) - log(pat[, "pat_0.0"])
-loglrnega[, "loglrnega_1.4"] <-
-  log(pat[, "pat_1.4"]) - log(pat[, "pat_0.0"])
-loglrnega[, "loglrnega_1.6"] <-
-  log(pat[, "pat_1.6"]) - log(pat[, "pat_0.0"])
-loglrnega[, "loglrnega_1.8"] <-
-  log(pat[, "pat_1.8"]) - log(pat[, "pat_0.0"])
-loglrnega[, "loglrnega_2.0"] <-
-  log(pat[, "pat_2.0"]) - log(pat[, "pat_0.0"])
-loglrnega[, "loglrnega_2.2"] <-
-  log(pat[, "pat_2.2"]) - log(pat[, "pat_0.0"])
-loglrnega[, "loglrnega_2.4"] <-
-  log(pat[, "pat_2.4"]) - log(pat[, "pat_0.0"])
-loglrnega[, "loglrnega_2.6"] <-
-  log(pat[, "pat_2.6"]) - log(pat[, "pat_0.0"])
-loglrnega[, "loglrnega_2.8"] <-
-  log(pat[, "pat_2.8"]) - log(pat[, "pat_0.0"])
-loglrnega[, "loglrnega_3.0"] <-
-  log(pat[, "pat_3.0"]) - log(pat[, "pat_0.0"])
-loglrnegb[, "loglrnegb_0.2"] <-
-  log(pbt[, "pbt_0.2"]) - log(pbt[, "pbt_0.0"])
-loglrnegb[, "loglrnegb_0.4"] <-
-  log(pbt[, "pbt_0.4"]) - log(pbt[, "pbt_0.0"])
-loglrnegb[, "loglrnegb_0.6"] <-
-  log(pbt[, "pbt_0.6"]) - log(pbt[, "pbt_0.0"])
-loglrnegb[, "loglrnegb_0.8"] <-
-  log(pbt[, "pbt_0.8"]) - log(pbt[, "pbt_0.0"])
-loglrnegb[, "loglrnegb_1.0"] <-
-  log(pbt[, "pbt_1.0"]) - log(pbt[, "pbt_0.0"])
-loglrnegb[, "loglrnegb_1.2"] <-
-  log(pbt[, "pbt_1.2"]) - log(pbt[, "pbt_0.0"])
-loglrnegb[, "loglrnegb_1.4"] <-
-  log(pbt[, "pbt_1.4"]) - log(pbt[, "pbt_0.0"])
-loglrnegb[, "loglrnegb_1.6"] <-
-  log(pbt[, "pbt_1.6"]) - log(pbt[, "pbt_0.0"])
-loglrnegb[, "loglrnegb_1.8"] <-
-  log(pbt[, "pbt_1.8"]) - log(pbt[, "pbt_0.0"])
-loglrnegb[, "loglrnegb_2.0"] <-
-  log(pbt[, "pbt_2.0"]) - log(pbt[, "pbt_0.0"])
-loglrnegb[, "loglrnegb_2.2"] <-
-  log(pbt[, "pbt_2.2"]) - log(pbt[, "pbt_0.0"])
-loglrnegb[, "loglrnegb_2.4"] <-
-  log(pbt[, "pbt_2.4"]) - log(pbt[, "pbt_0.0"])
-loglrnegb[, "loglrnegb_2.6"] <-
-  log(pbt[, "pbt_2.6"]) - log(pbt[, "pbt_0.0"])
-loglrnegb[, "loglrnegb_2.8"] <-
-  log(pbt[, "pbt_2.8"]) - log(pbt[, "pbt_0.0"])
-loglrnegb[, "loglrnegb_3.0"] <-
-  log(pbt[, "pbt_3.0"]) - log(pbt[, "pbt_0.0"])
-loglrnegc[, "loglrnegc_0.2"] <-
-  log(pct[, "pct_0.2"]) - log(pct[, "pct_0.0"])
-loglrnegc[, "loglrnegc_0.4"] <-
-  log(pct[, "pct_0.4"]) - log(pct[, "pct_0.0"])
-loglrnegc[, "loglrnegc_0.6"] <-
-  log(pct[, "pct_0.6"]) - log(pct[, "pct_0.0"])
-loglrnegc[, "loglrnegc_0.8"] <-
-  log(pct[, "pct_0.8"]) - log(pct[, "pct_0.0"])
-loglrnegc[, "loglrnegc_1.0"] <-
-  log(pct[, "pct_1.0"]) - log(pct[, "pct_0.0"])
-loglrnegc[, "loglrnegc_1.2"] <-
-  log(pct[, "pct_1.2"]) - log(pct[, "pct_0.0"])
-loglrnegc[, "loglrnegc_1.4"] <-
-  log(pct[, "pct_1.4"]) - log(pct[, "pct_0.0"])
-loglrnegc[, "loglrnegc_1.6"] <-
-  log(pct[, "pct_1.6"]) - log(pct[, "pct_0.0"])
-loglrnegc[, "loglrnegc_1.8"] <-
-  log(pct[, "pct_1.8"]) - log(pct[, "pct_0.0"])
-loglrnegc[, "loglrnegc_2.0"] <-
-  log(pct[, "pct_2.0"]) - log(pct[, "pct_0.0"])
-loglrnegc[, "loglrnegc_2.2"] <-
-  log(pct[, "pct_2.2"]) - log(pct[, "pct_0.0"])
-loglrnegc[, "loglrnegc_2.4"] <-
-  log(pct[, "pct_2.4"]) - log(pct[, "pct_0.0"])
-loglrnegc[, "loglrnegc_2.6"] <-
-  log(pct[, "pct_2.6"]) - log(pct[, "pct_0.0"])
-loglrnegc[, "loglrnegc_2.8"] <-
-  log(pct[, "pct_2.8"]) - log(pct[, "pct_0.0"])
-loglrnegc[, "loglrnegc_3.0"] <-
-  log(pct[, "pct_3.0"]) - log(pct[, "pct_0.0"])
-
-# include probability information in extended bounds:
-pa <- pat
-pb <- pbt
-pc <- pct
-prec.use <- 120
-one <- mpfr(1, prec.use)
-two <- mpfr(2, prec.use)
-mone <- mpfr(-1, prec.use)
-for (var in 1:16) pa[,var] <- pat[,var]/(two^(9:99))
-for (var in 1:16) pb[,var] <- pbt[,var]/(two^(9:99))
-for (var in 1:16) pc[,var] <- pct[,var]/(two^(9:99))
-
-boundspll <- cbind(
-  bounds,
-  asNumeric(pa), asNumeric(pb), asNumeric(pc),
-  asNumeric(loglrposa), asNumeric(loglrposb), asNumeric(loglrposc),
-  asNumeric(loglrnega), asNumeric(loglrnegb), asNumeric(loglrnegc)
-)
-
-# names(boundspll)
-# names(boundspll)[8:55]
-names(boundspll)[8:55] <-
-  paste0(substr(names(boundspll)[8:55], 1, 2),
-         substr(names(boundspll)[8:55], 4, 7))
-
-# save boundspll with Rmpfr background arrays:
-save(
-  boundspll,
-  pat, pbt, pct,
-  pa, pb, pc,
-  loglrposa, loglrposb, loglrposc,
-  loglrnega, loglrnegb, loglrnegc,
-  file = "data/boundspll.Rdata"
-)
-
-# save crs100 Rmpfr arrays
-save(list = ls(pattern = 'crs100_'), 
-     file="data/crs100.RData")
-
-# save crossrun distribution arrays
-x <- lapply(crs100_0.0, asNumeric)
-saveRDS(x, 'data/cr_dist.rds')
-
-# save box limits and probabilities
-saveRDS(boundspll, 'data/cr_bounds.rds')
-
-# save(bounds, file="bounds.Rdata")
-# save(pat,pbt,pct,file="pt.RData")
-
-# save loglr objects:
-# save(loglrposa,loglrposb,loglrposc,loglrnega,loglrnegb,loglrnegc, file="loglr.RData")
+  
+  # Table 1 in "Run charts revisited", PLOS ONE November 25, 2014 ----
+  bounds <- data.frame(
+    n  = nmin:nmax,
+    ca = qbinom(0.05, nmin:nmax - 1, 0.5),
+    la = round(log2(nmin:nmax) + 3)
+  )
+  row.names(bounds) <- bounds$n
+  
+  # find best boxes
+  bounds$cb <- NA
+  bounds$lb <- NA
+  
+  for (nn in nmin:nmax) {
+    print(paste('bestbox:', nn))
+    bounds[bounds$n == nn, c('cb', 'lb')] <- bestbox(n1 = nn)
+  }
+  
+  # find cut  boxes
+  bounds$cbord <- NA
+  bounds$lbord <- NA
+  
+  for (nn in nmin:nmax) {
+    print(paste('cutbox', nn))
+    bounds[bounds$n == nn, c('cbord', 'lbord')] <-
+      cutbox(n1 = nn,
+             c1 = bounds$cb[bounds$n == nn],
+             l1 = bounds$lb[bounds$n == nn])
+  }
+  
+  # Find no signal probabilities ----
+  ## initialize to impossible (negative) value:
+  pat <- mpfr2array(rep(mone, (nmax - 9) * nshifts),
+                    dim = c((nmax - 9), nshifts),
+                    dimnames = list(nmin:nmax, NULL))
+  
+  pbt       <- pat
+  pct       <- pat
+  loglrposa <- pat[ , -1]
+  loglrposb <- loglrposa
+  loglrposc <- loglrposa
+  loglrnega <- loglrposa
+  loglrnegb <- loglrposa
+  loglrnegc <- loglrposa
+  
+  colnames(pat)       <- paste0('pat_', shiftsc)
+  colnames(pbt)       <- paste0('pbt_', shiftsc)
+  colnames(pct)       <- paste0('pct_', shiftsc)
+  colnames(loglrposa) <- paste0('loglrposa_', shiftsc[-1])
+  colnames(loglrposb) <- paste0('loglrposb_', shiftsc[-1])
+  colnames(loglrposc) <- paste0('loglrposc_', shiftsc[-1])
+  colnames(loglrnega) <- paste0('loglrnega_', shiftsc[-1])
+  colnames(loglrnegb) <- paste0('loglrnegb_', shiftsc[-1])
+  colnames(loglrnegc) <- paste0('loglrnegc_', shiftsc[-1])
+  
+  ## calculations
+  for (nn in nmin:nmax) {
+    ca1    <- bounds$ca[bounds$n == nn]
+    la1    <- bounds$la[bounds$n == nn]
+    cb1    <- bounds$cb[bounds$n == nn]
+    lb1    <- bounds$lb[bounds$n == nn]
+    cbord1 <- bounds$cbord[bounds$n == nn]
+    lbord1 <- bounds$lbord[bounds$n == nn]
+    
+    for (s in shifts) {
+      i              <- match(s, shifts)
+      p              <- format(s, nsmall = 1)
+      p              <- paste0('pt_', p)
+      pat[nn - 9, i] <- sum(crs[[p]][[nn]][(ca1 + 1):nn, 1:la1])
+      pbt[nn - 9, i] <- sum(crs[[p]][[nn]][(cb1 + 1):nn, 1:lb1])
+      pct[nn - 9, i] <- pbt[nn - 9, i]
+      
+      if (!is.na(cbord1)) {
+        pct[nn - 9, i] <- 
+          sum(crs[[p]][[nn]][(cb1 + 2):nn, 1:(lb1 - 1)]) +
+          sum(crs[[p]][[nn]][(cbord1 + 1):nn, lb1]) +
+          sum(crs[[p]][[nn]][cb1 + 1, 1:lbord1])
+      }
+    }
+  }
+  
+  # Find likelihood ratios ----
+  for (s in shiftsc[shifts > 0]) {
+    pats <- paste0('pat_', s)
+    pbts <- paste0('pbt_', s)
+    pcts <- paste0('pct_', s)
+    loglrposa1 <- paste0('loglrposa_', s)
+    loglrposb1 <- paste0('loglrposb_', s)
+    loglrposc1 <- paste0('loglrposc_', s)
+    loglrnega1 <- paste0('loglrnega_', s)
+    loglrnegb1 <- paste0('loglrnegb_', s)
+    loglrnegc1 <- paste0('loglrnegc_', s)
+    
+    loglrposa[, loglrposa1] <-
+      log(two ^ (nmin:nmax - 1) - pat[, pats]) - 
+      log(two ^ (nmin:nmax - 1) - pat[, 'pat_0.0'])
+    loglrposb[, loglrposb1] <-
+      log(two ^ (nmin:nmax - 1) - pbt[, pbts]) - 
+      log(two ^ (nmin:nmax - 1) - pbt[, 'pbt_0.0'])
+    loglrposc[, loglrposc1] <-
+      log(two ^ (nmin:nmax - 1) - pct[, pcts]) - 
+      log(two ^ (nmin:nmax - 1) - pct[, 'pct_0.0'])
+    
+    loglrnega[, loglrnega1] <-
+      log(pat[, pats]) - log(pat[, 'pat_0.0'])
+    loglrnegb[, loglrnegb1] <-
+      log(pbt[, pbts]) - log(pbt[, 'pbt_0.0'])
+    loglrnegc[, loglrnegc1] <-
+      log(pct[, pcts]) - log(pct[, 'pct_0.0'])
+  }
+  
+  # Create bounds table including probability information ----
+  pa <- pat / (two ^ (nmin:nmax - 1))
+  pb <- pbt / (two ^ (nmin:nmax - 1))
+  pc <- pct / (two ^ (nmin:nmax - 1))
+  
+  boundspll <- cbind(
+    bounds,
+    asNumeric(pa),        asNumeric(pb),        asNumeric(pc),
+    asNumeric(loglrposa), asNumeric(loglrposb), asNumeric(loglrposc),
+    asNumeric(loglrnega), asNumeric(loglrnegb), asNumeric(loglrnegc)
+  )
+  
+  # Fix column names, pat -> pa etc.
+  names(boundspll) <- sub("(^p.{1}).", "\\1\\", names(boundspll))
+  
+  # # Save objects ----
+  # ## save boundspll with Rmpfr background arrays:
+  # save(
+  #   boundspll,
+  #   pat, pbt, pct,
+  #   pa, pb, pc,
+  #   loglrposa, loglrposb, loglrposc,
+  #   loglrnega, loglrnegb, loglrnegc,
+  #   file = 'data/boundspll.Rdata'
+  # )
+  # 
+  # ## save crs Rmpfr arrays
+  # saveRDS(crs, 'data/crs_mpfr.rds')
+  # 
+  # ## save crs numeric arrays
+  # crs_num <- lapply(crs, function(x) {
+  #   lapply(x, asNumeric)
+  # })
+  # saveRDS(crs_num, 'data/crs_num.rds')
+  # 
+  # ## save cr distribution for shift = 0
+  # saveRDS(cr_num$pt_0.0, 'data/cr_dist.rds')
+  # 
+  # ## save box limits and probabilities
+  # saveRDS(boundspll, 'data/cr_bounds.rds')
+})
