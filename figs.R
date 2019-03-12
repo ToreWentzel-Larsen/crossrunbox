@@ -159,21 +159,3 @@ crplot(17, labels = T)
 crplot(19, labels = F)
 crplot(24, labels = F)
 crplot(47, labels = F)
-# crplot(52, labels = F)
-# crplot(70, labels = F)
-
-# # Compare limits from anhoej and best box rules ----
-# limits <- b %>% 
-#   select(n:lb) %>% 
-#   gather('key', 'val', -n) %>% 
-#   separate(key, c('test', 'rule'), 1) %>% 
-#   mutate(test = fct_recode(test, `Lower limit for number of crossings` = 'c',
-#                            `Upper limit forlongest run` = 'l'),
-#          rule = fct_recode(rule, anhoej = 'a',
-#                            `best box` = 'b'))
-# 
-# ggplot(limits, aes(n, val, colour = rule)) +
-#   geom_line() +
-#   facet_wrap(~ test, scale = 'free_y') +
-#   scale_x_continuous(breaks = seq(20, 100, by = 20)) +
-#   theme_minimal()
