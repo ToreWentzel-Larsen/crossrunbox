@@ -9,7 +9,7 @@ prec.use <- 120
 one      <- mpfr(1, prec.use)
 two      <- mpfr(2, prec.use)
 mone     <- mpfr(-1, prec.use)
-shiftsc  <- format(shifts, nsmal = 1)
+shiftsc  <- format(shifts, nsmall = 1)
 nshifts  <- length(shifts)
 
 # bestbox function ----
@@ -139,16 +139,16 @@ cutbox <- function(pt0    = crs$pt_0.0,
 # Compute joint distributions of C and L for n = 1, ..., nmax ----
 crs <- list()
 for (s in shifts) {
-  r <- paste0('pt_', format(s, nsmal = 1))
+  r <- paste0('pt_', format(s, nsmall = 1))
   print(paste('Joint distribution:', r))
   crs[[r]] <- crossrunshift(nmax, s)$pt
 }
 
 # Table 1 in "Run charts revisited", PLOS ONE November 25, 2014 ----
 bounds <- data.frame(
-  n = 10:nmax,
-  ca = qbinom(0.05, 10:nmax - 1, 0.5),
-  la = round(log2(10:nmax) + 3)
+  n  = nmin:nmax,
+  ca = qbinom(0.05, nmin:nmax - 1, 0.5),
+  la = round(log2(nmin:nmax) + 3)
 )
 row.names(bounds) <- bounds$n
 
@@ -156,7 +156,7 @@ row.names(bounds) <- bounds$n
 bounds$cb <- NA
 bounds$lb <- NA
 
-for (nn in 10:nmax) {
+for (nn in nmin:nmax) {
   print(paste('bestbox:', nn))
   bounds[bounds$n == nn, c("cb", "lb")] <- bestbox(n1 = nn)
 }
@@ -165,7 +165,7 @@ for (nn in 10:nmax) {
 bounds$cbord <- NA
 bounds$lbord <- NA
 
-for (nn in 10:nmax) {
+for (nn in nmin:nmax) {
   print(paste('cutbox', nn))
   bounds[bounds$n == nn, c("cbord", "lbord")] <-
     cutbox(n1 = nn,
@@ -177,7 +177,7 @@ for (nn in 10:nmax) {
 ## initialize to impossible (negative) value:
 pat <- mpfr2array(rep(mone, (nmax - 9) * nshifts),
                   dim = c((nmax - 9), nshifts),
-                  dimnames = list(10:nmax, NULL))
+                  dimnames = list(nmin:nmax, NULL))
 
 pbt       <- pat
 pct       <- pat
@@ -199,7 +199,7 @@ colnames(loglrnegb) <- paste0('loglrnegb_', shiftsc[-1])
 colnames(loglrnegc) <- paste0('loglrnegc_', shiftsc[-1])
 
 ## calculations
-for (nn in 10:nmax) {
+for (nn in nmin:nmax) {
   ca1    <- bounds$ca[bounds$n == nn]
   la1    <- bounds$la[bounds$n == nn]
   cb1    <- bounds$cb[bounds$n == nn]
@@ -209,7 +209,7 @@ for (nn in 10:nmax) {
   
   for (s in shifts) {
     i              <- match(s, shifts)
-    p              <- format(s, nsmal = 1)
+    p              <- format(s, nsmall = 1)
     p              <- paste0('pt_', p)
     pat[nn - 9, i] <- sum(crs[[p]][[nn]][(ca1 + 1):nn, 1:la1])
     pbt[nn - 9, i] <- sum(crs[[p]][[nn]][(cb1 + 1):nn, 1:lb1])
@@ -261,13 +261,13 @@ pc <- pct / (two^(9:(nmax - 1)))
 
 boundspll <- cbind(
   bounds,
-  asNumeric(pa), asNumeric(pb), asNumeric(pc),
+  asNumeric(pa),        asNumeric(pb),        asNumeric(pc),
   asNumeric(loglrposa), asNumeric(loglrposb), asNumeric(loglrposc),
   asNumeric(loglrnega), asNumeric(loglrnegb), asNumeric(loglrnegc)
 )
 
+# Fix column names, pat -> pa etc.
 names(boundspll) <- sub("(^p.{1}).", "\\1\\", names(boundspll))
-
 
 # Save objects ----
 ## save boundspll with Rmpfr background arrays:
