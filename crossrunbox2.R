@@ -249,9 +249,9 @@ for (s in shiftsc[shifts > 0]) {
   loglrnega[, loglrnega1] <-
     log(pat[, pats]) - log(pat[, "pat_0.0"])
   loglrnegb[, loglrnegb1] <-
-    log(pbt[, pbts]) - log(pat[, "pat_0.0"])
+    log(pbt[, pbts]) - log(pbt[, "pbt_0.0"])
   loglrnegc[, loglrnegc1] <-
-    log(pct[, pcts]) - log(pat[, "pat_0.0"])
+    log(pct[, pcts]) - log(pct[, "pct_0.0"])
 }
 
 # Create bounds table including probability information ----
