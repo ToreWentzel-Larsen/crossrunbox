@@ -499,7 +499,7 @@ ggplot(filter(cr_bounds_tall, !is.na(loglrpos)),
        x = 'N')
 
 
-# tries building regions for declaring no special cause variation
+# tries building domains for declaring no special cause variation
 # from lower left corner and up , for one n
 domainbuild <- function(pt0,
                     pts,
@@ -612,7 +612,7 @@ asNumeric(d25) # sensitivity and specificity of rule d25:
 sum(cr_dists[[1]][[25]]*d25)/sum(cr_dists[[1]][[25]])
 1 - sum(cr_dists[[5]][[25]]*d25)/sum(cr_dists[[5]][[25]])
 
-# region rules, function:
+# domain rules, function:
 domainrulesf <- function(pt0,
                      pts,
                      target = 0.925,
