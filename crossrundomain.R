@@ -684,12 +684,29 @@ for (nn in 1:61) print(sum(abs(domrules.10.80[[nn]] - domrules.10.70[[nn]])))
 for (n1 in 1:10) print(sum(abs(domrules.10.70[[51+n1]] - domrules.61.70[[n1]])))
 rm(domrules.10.50,domrules.51.60,domrules.61.70)
 
+domrules.81.90 <- domainrulesf(pt0=cr_dists[[1]], pts=cr_dists[[5]], 
+                               nmin=81, nmax=90, printn=1)
+save.image("M:/Statistisk prosesskontroll/crossrunboxarticle-master/crossrundomain.RData")
+domrules.91.100 <- domainrulesf(pt0=cr_dists[[1]], pts=cr_dists[[5]], 
+                               nmin=91, nmax=100, printn=1)
+save.image("M:/Statistisk prosesskontroll/crossrunboxarticle-master/crossrundomain.RData")
+
+# merge:
+domrules.10.100 <- domrules.10.80
+for (nn in 1:10) domrules.10.100[[71+nn]] <- domrules.81.90[[nn]]
+for (nn in 1:10) domrules.10.100[[81+nn]] <- domrules.91.100[[nn]]
+names(domrules.10.100)[72:91] <- 81:100
+# check:
+for (n1 in 1:10) print(sum(abs(domrules.10.100[[71+n1]] - domrules.81.90[[n1]])))
+for (n1 in 1:10) print(sum(abs(domrules.10.100[[81+n1]] - domrules.91.100[[n1]])))
+rm(domrules.10.80,domrules.81.90,domrules.91.100)
+
 # light version:
-domruleslight.10.80 <- domrules.10.80
-for (nn in 10:80) domruleslight.10.80[[nn-9]] <- asNumeric(domrules.10.80[[nn-9]])
+domruleslight.10.100 <- domrules.10.100
+for (nn in 10:100) domruleslight.10.100[[nn-9]] <- asNumeric(domrules.10.100[[nn-9]])
 # checks:
-ndraw <- sample(10:80,1)
-domruleslight.10.80[[ndraw-9]]
+ndraw <- sample(10:100,1)
+domruleslight.10.100[[ndraw-9]]
 
 # simpler description of the rules
 # auxiliary functioN:
@@ -725,45 +742,40 @@ cmicmalmaf <- function(drul, check=0) {
 } # end function cmicmalmaf
 
 # check:
-ndraw <- sample(10:80,1)
-domruleslight.10.80[[ndraw-9]]
-cmicmalmaf(domruleslight.10.80[[ndraw-9]])
-
-dommatr <- list(domm=Rmpfr::mpfr2array(one, dim = c(nmin, nmin)))
-
+ndraw <- sample(10:100,1)
+domruleslight.10.100[[ndraw-9]]
+cmicmalmaf(domruleslight.10.100[[ndraw-9]])
 
 # create a list with the description of the rules:
-domrulesdesc.10.80 <- list(cmicmalmaf(domruleslight.10.80[[1]]))
-for (nn in 11:80) domrulesdesc.10.80[[nn-9]] <- 
-  cmicmalmaf(domruleslight.10.80[[nn-9]])
-names(domrulesdesc.10.80) <- 10:80
-
-# stores information on the rules, without Mpfr precision:
-save(domruleslight.10.80, domrulesdesc.10.80,
-     file="domain build rules 10 to 80.Rdata")
+one     <- mpfr(1, 120)
+dommatr <- list(domm=Rmpfr::mpfr2array(one, dim = c(nmin, nmin)))
+domrulesdesc.10.100 <- list(cmicmalmaf(domruleslight.10.100[[1]]))
+for (nn in 11:100) domrulesdesc.10.100[[nn-9]] <- 
+  cmicmalmaf(domruleslight.10.100[[nn-9]])
+names(domrulesdesc.10.100) <- 10:100
 
 
 # show rules:
-for (nn in 10:80) {
+for (nn in 10:100) {
   print(nn)
-  print(domrulesdesc.10.80[[nn-9]])
+  print(domrulesdesc.10.100[[nn-9]])
 }
 
 # specificities:
 cr_bounds$pd_0.0 <- rep(NA,91)
-for (nn in 10:80) cr_bounds$pd_0.0[nn-9] <- 
-  asNumeric(sum(cr_dists[[1]][[nn]]*domrules.10.80[[nn-9]])/sum(cr_dists[[1]][[nn]]))
+for (nn in 10:100) cr_bounds$pd_0.0[nn-9] <- 
+  asNumeric(sum(cr_dists[[1]][[nn]]*domrules.10.100[[nn-9]])/sum(cr_dists[[1]][[nn]]))
 # 1-sensitivities (shift 0.8):
 cr_bounds$pd_0.8 <- rep(NA,91)
-for (nn in 10:80) cr_bounds$pd_0.8[nn-9] <- 
-  asNumeric(sum(cr_dists[[5]][[nn]]*domrules.10.80[[nn-9]])/sum(cr_dists[[5]][[nn]]))
+for (nn in 10:100) cr_bounds$pd_0.8[nn-9] <- 
+  asNumeric(sum(cr_dists[[5]][[nn]]*domrules.10.100[[nn-9]])/sum(cr_dists[[5]][[nn]]))
 1 - cr_bounds$pd_0.8
-cr_bounds[1:71,c("pd_0.0","pd_0.8")]
+cr_bounds[1:91,c("pd_0.0","pd_0.8")]
 # specificities and sensitivities:
-spsecd <-  data.frame(n=cr_bounds$n[1:71],
-           spes_c=cr_bounds$pc_0.0[1:71], spes_d=cr_bounds$pd_0.0[1:71],
-           sens_c=1-cr_bounds$pc_0.8[1:71],
-           sens_d=1-cr_bounds$pd_0.8[1:71])
+spsecd <-  data.frame(n=cr_bounds$n[1:91],
+           spes_c=cr_bounds$pc_0.0[1:91], spes_d=cr_bounds$pd_0.0[1:91],
+           sens_c=1-cr_bounds$pc_0.8[1:91],
+           sens_d=1-cr_bounds$pd_0.8[1:91])
 spsecd
 # show occurences with c higher sensitivity that d:
 spsecd[spsecd$sens_c>=spsecd$sens_d,]
@@ -772,23 +784,27 @@ spsecd[spsecd$sens_c>=spsecd$sens_d,]
 # simple plots, specificities and sensitivities:
 par(mar= c(bottom=4, left=3, top=3, right=.5)+.1)
 par(mfrow=c(1,2))
-plot(x=10:80, y=cr_bounds$pa_0.0[1:71], type="l", col="red", axes=FALSE,
+plot(x=10:100, y=cr_bounds$pa_0.0[1:91], type="l", col="red", axes=FALSE,
       xlab="N", ylab="", main="Probability of true negative")
 box()
-axis(1, at=c(10,20,30,40,50,60,70,80))
+axis(1, at=c(10,20,30,40,50,60,70,80,90,100))
 axis(2, las=1)
-points(x=10:80, y=cr_bounds$pb_0.0[1:71], col="green3", type="l")
-points(x=10:80, y=cr_bounds$pc_0.0[1:71], col="blue", type="l")
-points(x=10:80, y=cr_bounds$pd_0.0[1:71], col="orange", type="l")
+points(x=10:100, y=cr_bounds$pb_0.0[1:91], col="green3", type="l")
+points(x=10:100, y=cr_bounds$pc_0.0[1:91], col="blue", type="l")
+points(x=10:100, y=cr_bounds$pd_0.0[1:91], col="orange", type="l")
 # simple plot, sensitivities:
-plot(x=10:80, y=1-cr_bounds$pa_0.8[1:71], type="l", col="red",
+plot(x=10:100, y=1-cr_bounds$pa_0.8[1:91], type="l", col="red",
      axes=FALSE, xlab="N", ylab="", main="Sensitivity, shift 0.8")
 box()
-axis(1, at=c(10,20,30,40,50,60,70,80))
+axis(1, at=c(10,20,30,40,50,60,70,80,90,100))
 axis(2, las=1)
-points(x=10:80, y=1-cr_bounds$pb_0.8[1:71], col="green3", type="l")
-points(x=10:80, y=1-cr_bounds$pc_0.8[1:71], col="blue", type="l")
-points(x=10:80, y=1-cr_bounds$pd_0.8[1:71], col="orange", type="l")
+points(x=10:100, y=1-cr_bounds$pb_0.8[1:91], col="green3", type="l")
+points(x=10:100, y=1-cr_bounds$pc_0.8[1:91], col="blue", type="l")
+points(x=10:100, y=1-cr_bounds$pd_0.8[1:91], col="orange", type="l")
 par(mfrow=c(1,1))
 par(mar= c(bottom=5, left=4, top=4, right=2)+.1)
+
+# stores information on the rules, without Mpfr precision:
+save(domruleslight.10.100, domrulesdesc.10.100, cr_bounds,
+     file="domain build rules 10 to 100.Rdata")
 
