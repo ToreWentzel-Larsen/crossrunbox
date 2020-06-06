@@ -4,7 +4,6 @@ crsignal <- function(n, c, l, method = c('anhoej', 'bestbox', 'cutbox')) {
   if (!(method %in% c('anhoej', 'bestbox', 'cutbox')))
     stop('method should be \"anhoej\", \"bestbox\", or \"cutbox\"')
   
-  
   if ((n < 10 | n > 100) & method != 'anhoej') {
     message('Best box and cut box computations only available for n between 10 and 100.')
     method <- 'anhoej'
@@ -52,8 +51,6 @@ crsignal <- function(n, c, l, method = c('anhoej', 'bestbox', 'cutbox')) {
   res <- FALSE
   
   if (method == 'anhoej') {
-    can <- bounds$ca[bounds$n == n]
-    lan <- bounds$la[bounds$n == n]
     can <- qbinom(0.05, n - 1, 0.5)
     lan <- round(log2(n)) + 3
     if (!(c >= can & l <= lan))
